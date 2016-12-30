@@ -14,5 +14,5 @@ import dagger.Component;
         modules = GuildModule.class
 )
 public interface GuildComponent {
-    void inject(Guild guild);
+    void inject(GuildMembersActivity guildActivity);
 }

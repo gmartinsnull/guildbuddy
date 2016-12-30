@@ -1,6 +1,9 @@
 package com.gomart.guildbuddy.module;
 
-import com.gomart.guildbuddy.ui.GuildMembersActivity;
+import com.gomart.guildbuddy.model.Guild;
+
+import java.io.Serializable;
+import java.util.ArrayList;
 
 import dagger.Module;
 import dagger.Provides;
@@ -12,14 +15,14 @@ import dagger.Provides;
 @Module
 public class GuildModule {
 
-    private final GuildMembersActivity activity;
+    private final Guild guild;
 
-    public GuildModule(GuildMembersActivity guildMembersActivity){
-        this.activity = guildMembersActivity;
+    public GuildModule(Guild guild){
+        this.guild = guild;
     }
 
     @Provides
-    public GuildMembersActivity provideGuild(){
-        return this.activity;
+    public Guild provideGuild(){
+        return this.guild;
     }
 }

@@ -67,10 +67,15 @@ public class GuildMembersActivity extends AppCompatActivity {
         Guild g = (Guild) i.getSerializableExtra("guild");
 
         component = DaggerGuildComponent.builder()
+                .guildModule(new GuildModule(g))
+                .build();
+        component.inject(this);
+
+        /*component = DaggerGuildComponent.builder()
                 .guildModule(new GuildModule(this))
                 .build();
         component.inject(
-                g);
+                g);*/
 
         progress = (ProgressBar)findViewById(R.id.progress);
 
