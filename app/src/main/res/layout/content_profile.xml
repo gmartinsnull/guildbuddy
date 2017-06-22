@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToPadding="false"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    <LinearLayout
+        android:id="@+id/container_profile"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="20dp">
+
+        <TextView
+            android:id="@+id/txt_name_lbl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/text_margin"
+            android:text="Name:"/>
+
+        <TextView
+            android:id="@+id/txt_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/text_margin"
+            android:paddingLeft="@dimen/text_paddingLeft"/>
+
+        <TextView
+            android:id="@+id/txt_race_lbl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/text_margin"
+            android:text="Race:"/>
+
+        <TextView
+            android:id="@+id/txt_race"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/text_margin"
+            android:paddingLeft="@dimen/text_paddingLeft"/>
+
+        <TextView
+            android:id="@+id/txt_class_lbl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/text_margin"
+            android:text="Class:"/>
+        <TextView
+            android:id="@+id/txt_class"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/text_margin"
+            android:paddingLeft="@dimen/text_paddingLeft"/>
+
+        <TextView
+            android:id="@+id/txt_role_lbl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/text_margin"
+            android:text="Role:"/>
+        <TextView
+            android:id="@+id/txt_role"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/text_margin"
+            android:paddingLeft="@dimen/text_paddingLeft"/>
+
+        <TextView
+            android:id="@+id/txt_level_lbl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/text_margin"
+            android:text="Level:"/>
+        <TextView
+            android:id="@+id/txt_level"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/text_margin"
+            android:paddingLeft="@dimen/text_paddingLeft"/>
+
+        <TextView
+            android:id="@+id/txt_item_lvl_lbl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/text_margin"
+            android:text="iLvl:"/>
+        <TextView
+            android:id="@+id/txt_item_lvl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/text_margin"
+            android:paddingLeft="@dimen/text_paddingLeft"/>
+
+        <TextView
+            android:id="@+id/txt_achievements_lbl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/text_margin"
+            android:text="Achievement Points:"/>
+        <TextView
+            android:id="@+id/txt_achievements"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/text_margin"
+            android:paddingLeft="@dimen/text_paddingLeft"/>
+
+        <TextView
+            android:id="@+id/txt_pvp_lbl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/text_margin"
+            android:text="Total Honorable Kills:"/>
+        <TextView
+            android:id="@+id/txt_pvp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/text_margin"
+            android:paddingLeft="@dimen/text_paddingLeft"/>
+
+    </LinearLayout>
+    
+</android.support.v4.widget.NestedScrollView>

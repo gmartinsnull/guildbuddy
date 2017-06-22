@@ -1,9 +1,11 @@
 package com.gomart.guildbuddy.module;
 
-import com.gomart.guildbuddy.model.Guild;
+import android.content.Context;
 
-import java.io.Serializable;
-import java.util.ArrayList;
+import com.gomart.guildbuddy.model.Guild;
+import com.gomart.guildbuddy.ui.presenter.GuildPresenter;
+
+import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
@@ -15,14 +17,17 @@ import dagger.Provides;
 @Module
 public class GuildModule {
 
-    private final Guild guild;
+    private Guild guild;
+    private Context context;
 
-    public GuildModule(Guild guild){
+    public GuildModule(Context context, Guild guild){
         this.guild = guild;
+        this.context = context;
     }
 
+    @Singleton
     @Provides
-    public Guild provideGuild(){
-        return this.guild;
+    GuildPresenter provideGuildPresenter(){
+        return new GuildPresenter(context, guild);
     }
 }

@@ -8,4 +8,21 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!--Legion theme-->
+    <style name="LegionTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/customPrimary</item>
+        <item name="colorPrimaryDark">@color/customPrimaryDark</item>
+        <item name="colorAccent">@color/customAccent</item>
+        <item name="colorControlHighlight">@color/buttonPressed</item>
+    </style>
+
+    <!--Button-->
+    <style name="buttonStyle" parent="Widget.AppCompat.ActionButton">
+        <item name="android:background">@drawable/button_ripple</item>
+        <item name="android:textColor">@color/buttonText</item>
+        <item name="android:textSize">17dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
 </resources>

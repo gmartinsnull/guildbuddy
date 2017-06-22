@@ -1,33 +1,35 @@
 package com.gomart.guildbuddy.ui;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.gomart.guildbuddy.Constants;
+import com.gomart.guildbuddy.GuildBuddy;
 import com.gomart.guildbuddy.R;
-import com.gomart.guildbuddy.api.GetGuildMembersResponse;
-import com.gomart.guildbuddy.api.controller.GuildController;
-import com.gomart.guildbuddy.component.DaggerGuildComponent;
-import com.gomart.guildbuddy.component.GuildComponent;
+import com.gomart.guildbuddy.network.GetGuildMembersResponse;
+import com.gomart.guildbuddy.ui.adapter.GuildMembersAdapter;
+import com.gomart.guildbuddy.ui.presenter.GuildPresenter;
+import com.gomart.guildbuddy.manager.DataManager;
 import com.gomart.guildbuddy.model.Character;
 import com.gomart.guildbuddy.model.CharacterClass;
 import com.gomart.guildbuddy.model.CharacterRace;
 import com.gomart.guildbuddy.model.Guild;
 import com.gomart.guildbuddy.model.GuildMember;
-import com.gomart.guildbuddy.module.GuildModule;
-import com.gomart.guildbuddy.ui.adapter.RecyclerViewCustomAdapter;
 
 import java.util.ArrayList;
 
@@ -43,52 +45,52 @@ import retrofit2.Response;
 
 public class GuildMembersActivity extends AppCompatActivity {
 
-    private GuildController gCtrl;
+    public static final String GUILD_MEMBER = "GUILD_MEMBER";
+
+    private GuildPresenter guildPresenter;
     private ArrayList<CharacterClass> classes;
     private ArrayList<CharacterRace> races;
     private ArrayList<Character> characters;
 
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
-    private CardView cView;
     private RecyclerView.LayoutManager layoutManager;
 
     private ProgressBar progress;
 
-    private GuildComponent component;
+    @Inject
+    DataManager dataManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guild_members);
 
+        GuildBuddy.app().getAppComponent().inject(this);
+
         Intent i = getIntent();
 
-        Guild g = (Guild) i.getSerializableExtra("guild");
+        Guild g;
+        classes = new ArrayList<>();
+        races = new ArrayList<>();
 
-        component = DaggerGuildComponent.builder()
-                .guildModule(new GuildModule(g))
-                .build();
-        component.inject(this);
 
-        /*component = DaggerGuildComponent.builder()
-                .guildModule(new GuildModule(this))
-                .build();
-        component.inject(
-                g);*/
+        if (i.getSerializableExtra(Constants.KEY_GUILD) != null) {
+            g = (Guild) i.getSerializableExtra(Constants.KEY_GUILD);
+            classes = (ArrayList<CharacterClass>) i.getSerializableExtra(Constants.KEY_CLASSES);
+            races = (ArrayList<CharacterRace>) i.getSerializableExtra(Constants.KEY_RACES);
+            dataManager.setGuild(g);
+            dataManager.setClasses(classes);
+            dataManager.setRaces(races);
+        }else{
+            g = dataManager.getGuild();
+            classes = dataManager.getClasses();
+            races = dataManager.getRaces();
+        }
 
         progress = (ProgressBar)findViewById(R.id.progress);
 
-
-
-        classes = new ArrayList<>();
-        classes = (ArrayList<CharacterClass>) i.getSerializableExtra("classes");
-
-        races = new ArrayList<>();
-        races = (ArrayList<CharacterRace>) i.getSerializableExtra("races");
-
-        gCtrl = new GuildController();
-        gCtrl.init(this, g);
+        guildPresenter = new GuildPresenter(this, g);
 
         getGuildMembers();
 
@@ -103,7 +105,7 @@ public class GuildMembersActivity extends AppCompatActivity {
 
     private void getGuildMembers(){
         progress.setVisibility(View.VISIBLE);
-        gCtrl.getGuild(new Callback<GetGuildMembersResponse>() {
+        guildPresenter.getGuild(new Callback<GetGuildMembersResponse>() {
             @Override
             public void onResponse(Call<GetGuildMembersResponse> call, Response<GetGuildMembersResponse> response) {
                 //Log.d("#MAIN", response.body().toString());
@@ -120,7 +122,7 @@ public class GuildMembersActivity extends AppCompatActivity {
                         }
                     }
                 }
-                adapter = new RecyclerViewCustomAdapter(GuildMembersActivity.this, characters);
+                adapter = new GuildMembersAdapter(GuildMembersActivity.this, characters);
                 recyclerView.setAdapter(adapter);
                 progress.setVisibility(View.GONE);
             }
@@ -146,7 +148,7 @@ public class GuildMembersActivity extends AppCompatActivity {
 
         @Override
         public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-            int position = parent.getChildAdapterPosition(view);
+            final int position = parent.getChildAdapterPosition(view);
             int column = position % spanCount;
 
             if (includeEdge) {
@@ -164,6 +166,15 @@ public class GuildMembersActivity extends AppCompatActivity {
                     outRect.top = spacing;
                 }
             }
+
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(GuildMembersActivity.this, GuildMemberProfileActivity.class);
+                    i.putExtra(GUILD_MEMBER, characters.get(position));
+                    startActivity(i);
+                }
+            });
         }
     }
 
@@ -173,4 +184,39 @@ public class GuildMembersActivity extends AppCompatActivity {
         return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_search, menu);
+
+        MenuItem menuItem = menu.findItem(R.id.search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                ArrayList<Character> auxCharacters= new ArrayList<>();
+                auxCharacters = characters;
+                int position;
+                for (Character character: characters) {
+                    if (!query.toLowerCase().equals(character.getName().toLowerCase())){
+                        position = auxCharacters.indexOf(character);
+                        auxCharacters.remove(position);
+                        recyclerView.removeViewAt(position);
+
+                    }
+                }
+                /*adapter.notifyItemRemoved(position);
+                adapter.notifyItemRangeChanged(position, auxCharacters.size());*/
+                //adapter.notifyDataSetChanged();
+
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
+        return true;
+    }
 }

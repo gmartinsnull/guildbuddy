@@ -1,6 +1,12 @@
 package com.gomart.guildbuddy.module;
 
-import com.gomart.guildbuddy.GuildBuddy;
+import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
+import com.gomart.guildbuddy.manager.DataManager;
+import com.squareup.picasso.Picasso;
 
 import javax.inject.Singleton;
 
@@ -13,15 +19,34 @@ import dagger.Provides;
 
 @Module
 public class AppModule {
-    private final GuildBuddy app;
 
-    public AppModule(GuildBuddy app){
-        this.app = app;
+    private Application application;
+
+    public AppModule(Application application){
+        this.application = application;
     }
 
-    @Provides
     @Singleton
-    public GuildBuddy app(){
-        return this.app;
+    @Provides
+    public Context provideContext(){
+        return application;
+    }
+
+    @Singleton
+    @Provides
+    public Picasso providePicasso(){
+        return new Picasso.Builder(application).build();
+    }
+
+    @Singleton
+    @Provides
+    public SharedPreferences provideSharedPreferences(){
+        return PreferenceManager.getDefaultSharedPreferences(application);
+    }
+
+    @Singleton
+    @Provides
+    public DataManager provideDataManager(SharedPreferences sharedPreferences){
+        return new DataManager(sharedPreferences);
     }
 }

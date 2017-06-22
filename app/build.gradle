@@ -3,7 +3,7 @@ apply plugin: 'com.neenbedankt.android-apt'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.3"
+    buildToolsVersion '25.0.0'
     defaultConfig {
         applicationId "com.gomart.guildbuddy"
         minSdkVersion 19
@@ -11,6 +11,12 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        buildConfigField 'String', 'URL', '"api.battle.net"'
+        buildConfigField 'String', 'URL_START', '"https://us."'
+        buildConfigField 'String', 'CHAR_URL', '"https://render-us.worldofwarcraft.com/character/"'
+        buildConfigField 'String', 'LOCALE', '"en_US"'
+        buildConfigField 'String', 'API_KEY', '"33nxy4qemg2zmf9dyvk3qzbpmzsezjtg"'
     }
     buildTypes {
         release {
@@ -20,7 +26,6 @@ android {
 
         debug{
             minifyEnabled false
-            buildConfigField 'String', 'URL', '"api.battle.net"'
         }
     }
 }
@@ -33,6 +38,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.android.support:recyclerview-v7:24.2.1'
     compile 'com.android.support:cardview-v7:24.2.1'
+    compile 'com.android.support:design:24.2.1'
     testCompile 'junit:junit:4.12'
 
     //RETROFIT

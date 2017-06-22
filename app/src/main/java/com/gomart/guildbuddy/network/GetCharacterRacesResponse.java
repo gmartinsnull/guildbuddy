@@ -1,4 +1,4 @@
-package com.gomart.guildbuddy.api;
+package com.gomart.guildbuddy.network;
 
 import com.gomart.guildbuddy.model.CharacterRace;
 import com.google.gson.annotations.SerializedName;

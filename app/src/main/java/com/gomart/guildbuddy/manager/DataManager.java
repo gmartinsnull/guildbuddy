@@ -1,13 +1,15 @@
 package com.gomart.guildbuddy.manager;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.widget.ImageView;
 
 import com.gomart.guildbuddy.model.CharacterClass;
 import com.gomart.guildbuddy.model.CharacterRace;
+import com.gomart.guildbuddy.model.Guild;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-
-import javax.inject.Singleton;
 
 /**
  * Created by glaubermartins on 2016-11-29.
@@ -15,21 +17,16 @@ import javax.inject.Singleton;
 
 public class DataManager {
 
-    private static DataManager mInstance = new DataManager();
     private ArrayList<CharacterClass> classes;
     private ArrayList<CharacterRace> races;
+    private Guild guild;
 
-    private Context context;
+    private SharedPreferences sharedPref;
 
-    private DataManager() {
-    }
+    private Picasso picasso;
 
-    public void init(Context c){
-        context = c;
-    }
-
-    public static DataManager getInstance(){
-        return mInstance;
+    public DataManager(SharedPreferences sharedPreferences) {
+        this.sharedPref = sharedPreferences;
     }
 
     public ArrayList<CharacterClass> getClasses() {
@@ -63,4 +60,50 @@ public class DataManager {
         }
         return "";
     }
+
+    public Guild getGuild() {
+        return guild;
+    }
+
+    public void setGuild(Guild guild) {
+        this.guild = guild;
+    }
+
+
+    /*SHARED PREFERENCES*/
+    public void save(String key, String value){
+        sharedPref.edit().putString(key, value).apply();
+    }
+    public void save(String key, int value){
+        sharedPref.edit().putInt(key, value).apply();
+    }
+    public void save(String key, float value){
+        sharedPref.edit().putFloat(key, value).apply();
+    }
+    public void save(String key, boolean value){
+        sharedPref.edit().putBoolean(key, value).apply();
+    }
+
+    public String get(String key, String defaultValue){
+        return sharedPref.getString(key, defaultValue);
+    }
+    public int get(String key, int defaultValue){
+        return sharedPref.getInt(key, defaultValue);
+    }
+    public float get(String key, float defaultValue){
+        return sharedPref.getFloat(key, defaultValue);
+    }
+    public boolean get(String key, boolean defaultValue){
+        return sharedPref.getBoolean(key, defaultValue);
+    }
+
+    public void delete(String key){
+        sharedPref.edit().remove(key).apply();
+    }
+
+    /*PICASSO*/
+    public void loadPicture(Context c, String url, ImageView view){
+        picasso.with(c).load(url).into(view);
+    }
+
 }

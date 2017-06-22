@@ -1,16 +1,12 @@
-package com.gomart.guildbuddy.api.controller;
+package com.gomart.guildbuddy.ui.presenter;
 
 import android.content.Context;
 
 import com.gomart.guildbuddy.BuildConfig;
-import com.gomart.guildbuddy.api.GetCharacterClassesResponse;
-import com.gomart.guildbuddy.api.GetCharacterRacesResponse;
-import com.gomart.guildbuddy.api.interfaces.CharacterService;
-import com.gomart.guildbuddy.model.CharacterClass;
+import com.gomart.guildbuddy.network.GetCharacterClassesResponse;
+import com.gomart.guildbuddy.network.GetCharacterRacesResponse;
+import com.gomart.guildbuddy.network.interfaces.CharacterService;
 import com.gomart.guildbuddy.model.GuildMember;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;

@@ -1,7 +1,10 @@
 package com.gomart.guildbuddy.component;
 
-import com.gomart.guildbuddy.GuildBuddy;
 import com.gomart.guildbuddy.module.AppModule;
+import com.gomart.guildbuddy.ui.GuildMemberProfileActivity;
+import com.gomart.guildbuddy.ui.GuildMembersActivity;
+import com.gomart.guildbuddy.ui.MainActivity;
+import com.gomart.guildbuddy.ui.adapter.GuildMembersAdapter;
 
 import javax.inject.Singleton;
 
@@ -13,9 +16,11 @@ import dagger.Component;
 
 @Singleton
 @Component(
-        modules = AppModule.class
+        modules = { AppModule.class}
 )
 public interface AppComponent {
-    void inject(GuildBuddy app);
-    GuildBuddy app();
+    void inject(MainActivity mainActivity);
+    void inject(GuildMembersActivity guildMembersActivity);
+    void inject(GuildMembersAdapter guildMembersAdapter);
+    void inject(GuildMemberProfileActivity guildMemberProfileActivity);
 }

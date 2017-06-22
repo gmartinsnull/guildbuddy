@@ -9,31 +9,31 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.gomart.guildbuddy.BuildConfig;
+import com.gomart.guildbuddy.GuildBuddy;
 import com.gomart.guildbuddy.R;
-import com.gomart.guildbuddy.api.controller.CharacterController;
 import com.gomart.guildbuddy.manager.DataManager;
 import com.gomart.guildbuddy.model.Character;
-import com.gomart.guildbuddy.model.GuildMember;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+
+import javax.inject.Inject;
 
 /**
  * Created by glaubermartins on 2016-11-29.
  */
 
-public class RecyclerViewCustomAdapter extends RecyclerView.Adapter<RecyclerViewCustomAdapter.CustomViewHolder> {
+public class GuildMembersAdapter extends RecyclerView.Adapter<GuildMembersAdapter.CustomViewHolder> {
 
     private Context c;
     private ArrayList<Character> characters;
 
-    private static final String CHAR_URL = "https://render-us.worldofwarcraft.com/character/";
-    private static final String LOCALE = "?locale=en_US";
-    private static final String API_KEY = "&apikey=33nxy4qemg2zmf9dyvk3qzbpmzsezjtg";
+    @Inject
+    DataManager dataManager;
 
-    public RecyclerViewCustomAdapter(Context c, ArrayList<Character> characters) {
+    public GuildMembersAdapter(Context c, ArrayList<Character> characters) {
         this.c = c;
         this.characters = characters;
+        GuildBuddy.app().getAppComponent().inject(this);
     }
 
     public class CustomViewHolder extends RecyclerView.ViewHolder{
@@ -62,10 +62,11 @@ public class RecyclerViewCustomAdapter extends RecyclerView.Adapter<RecyclerView
         Character character =  characters.get(position);
         holder.name.setText(character.getName());
         holder.level.setText(String.valueOf(character.getLevel()));
-        holder.race.setText(DataManager.getInstance().getCharacterRace(character.getRace()));
-        holder.charClass.setText(DataManager.getInstance().getCharacterClass(character.getCharClass()));
+        holder.race.setText(dataManager.getCharacterRace(character.getRace()));
+        holder.charClass.setText(dataManager.getCharacterClass(character.getCharClass()));
 
-        Picasso.with(c).load(CHAR_URL+character.getThumbnail()+LOCALE+API_KEY).into(holder.thumb);
+        String url = BuildConfig.CHAR_URL+character.getThumbnail()+"?locale="+BuildConfig.LOCALE+"?apikey="+BuildConfig.API_KEY;
+        dataManager.loadPicture(c, url, holder.thumb);
     }
 
     @Override

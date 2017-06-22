@@ -7,18 +7,24 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
 
+import com.gomart.guildbuddy.GuildBuddy;
 import com.gomart.guildbuddy.R;
-import com.gomart.guildbuddy.api.GetCharacterClassesResponse;
-import com.gomart.guildbuddy.api.GetCharacterRacesResponse;
-import com.gomart.guildbuddy.api.controller.CharacterController;
+import com.gomart.guildbuddy.Constants;
+import com.gomart.guildbuddy.network.GetCharacterClassesResponse;
+import com.gomart.guildbuddy.network.GetCharacterRacesResponse;
+import com.gomart.guildbuddy.ui.presenter.CharacterController;
+import com.gomart.guildbuddy.helper.CheckBlankHelper;
+import com.gomart.guildbuddy.helper.DialogHelper;
 import com.gomart.guildbuddy.manager.DataManager;
 import com.gomart.guildbuddy.model.CharacterClass;
 import com.gomart.guildbuddy.model.CharacterRace;
 import com.gomart.guildbuddy.model.Guild;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import javax.inject.Inject;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -26,7 +32,9 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-    private CharacterController cCtrl;
+    public static final String GUILD_MEMBERS = "members";
+
+    private CharacterController charCtrl;
 
     private CharacterClass charClass;
     private CharacterRace charRace;
@@ -37,54 +45,78 @@ public class MainActivity extends AppCompatActivity {
     private EditText edtRealm;
     private Button btnSearch;
 
+    @Inject
+    DataManager dataManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        GuildBuddy.app().getAppComponent().inject(this);
+
         edtRealm = (EditText)findViewById(R.id.edt_realm);
         edtGuildName = (EditText)findViewById(R.id.edt_guildName);
         btnSearch = (Button)findViewById(R.id.btn_search);
 
-        cCtrl = new CharacterController();
+        charCtrl = new CharacterController();
 
         getClasseNames();
         getRaceNames();
 
+        if (dataManager.get(Constants.KEY_GUILD, "") != null && dataManager.get(Constants.KEY_GUILD, "").length() > 0 && dataManager.get(Constants.KEY_REALM, "") != null && dataManager.get(Constants.KEY_REALM, "").length() > 0){
+            edtGuildName.setText(dataManager.get(Constants.KEY_GUILD, ""));
+            edtRealm.setText(dataManager.get(Constants.KEY_REALM, ""));
+        }
+
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Guild g = new Guild(edtGuildName.getText().toString(), edtRealm.getText().toString());
+                List<EditText> inputs = new ArrayList<>();
+                inputs.add(edtRealm);
+                inputs.add(edtGuildName);
 
-                ArrayList<String> fields = new ArrayList<>();
-                fields.add("members");
+                if (CheckBlankHelper.checkBlankFields(inputs)){
+                    //Guild g = new Guild(edtGuildName.getText().toString(), edtRealm.getText().toString());
+                    Guild g = new Guild(edtGuildName.getText().toString(), edtRealm.getText().toString());
 
-                g.setFields(fields);
+                    ArrayList<String> fields = new ArrayList<>();
+                    fields.add(GUILD_MEMBERS);
 
-                Intent i = new Intent(MainActivity.this, GuildMembersActivity.class);
-                i.putExtra("classes", classes);
-                i.putExtra("races", races);
-                i.putExtra("guild", g);
-                startActivity(i);
+                    g.setFields(fields);
+
+                    dataManager.save(Constants.KEY_GUILD, edtGuildName.getText().toString());
+                    dataManager.save(Constants.KEY_REALM, edtRealm.getText().toString());
+
+                    Intent i = new Intent(MainActivity.this, GuildMembersActivity.class);
+                    i.putExtra(Constants.KEY_CLASSES, classes);
+                    i.putExtra(Constants.KEY_RACES, races);
+                    i.putExtra(Constants.KEY_GUILD, g);
+                    startActivity(i);
+                }else{
+                    DialogHelper.showOkDialog(MainActivity.this, getString(R.string.oops), getString(R.string.empty_fields));
+                }
             }
         });
 
     }
 
     private void getClasseNames(){
-        cCtrl.init(this);
+        charCtrl.init(this);
 
-        cCtrl.getClassName(new Callback<GetCharacterClassesResponse>() {
+        charCtrl.getClassName(new Callback<GetCharacterClassesResponse>() {
             @Override
             public void onResponse(Call<GetCharacterClassesResponse> call, Response<GetCharacterClassesResponse> response) {
                 classes = new ArrayList<>();
-                for (CharacterClass cc : response.body().getClasses()) {
-                    //Log.d("#CLASSNAME", cc.getName());
-                    charClass = new CharacterClass(cc.getId(), cc.getPowerType(), cc.getName());
-                    classes.add(charClass);
+                if (response.isSuccessful()){
+                    for (CharacterClass cc : response.body().getClasses()) {
+                        //Log.d("#CLASSNAME", cc.getName());
+                        charClass = new CharacterClass(cc.getId(), cc.getPowerType(), cc.getName());
+                        classes.add(charClass);
 
+                    }
+                    dataManager.setClasses(classes);
                 }
-                DataManager.getInstance().setClasses(classes);
             }
 
             @Override
@@ -96,9 +128,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getRaceNames(){
-        cCtrl.init(this);
+        charCtrl.init(this);
 
-        cCtrl.getRaceName(new Callback<GetCharacterRacesResponse>() {
+        charCtrl.getRaceName(new Callback<GetCharacterRacesResponse>() {
             @Override
             public void onResponse(Call<GetCharacterRacesResponse> call, Response<GetCharacterRacesResponse> response) {
                 races = new ArrayList<>();
@@ -107,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
                     charRace = new CharacterRace(cr.getId(), cr.getSide(), cr.getName());
                     races.add(charRace);
                 }
-                DataManager.getInstance().setRaces(races);
+                dataManager.setRaces(races);
             }
 
             @Override

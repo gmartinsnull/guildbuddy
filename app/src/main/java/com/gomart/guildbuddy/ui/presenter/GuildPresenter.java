@@ -1,10 +1,10 @@
-package com.gomart.guildbuddy.api.controller;
+package com.gomart.guildbuddy.ui.presenter;
 
 import android.content.Context;
 
 import com.gomart.guildbuddy.BuildConfig;
-import com.gomart.guildbuddy.api.GetGuildMembersResponse;
-import com.gomart.guildbuddy.api.interfaces.GuildService;
+import com.gomart.guildbuddy.network.GetGuildMembersResponse;
+import com.gomart.guildbuddy.network.interfaces.GuildService;
 import com.gomart.guildbuddy.model.Guild;
 
 import okhttp3.OkHttpClient;
@@ -18,41 +18,34 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by glaubermartins on 2016-11-24.
  */
 
-public class GuildController {
+public class GuildPresenter {
 
-    private Context c;
+    private Context context;
     private GuildService guildService;
     private Guild guild;
 
-    private static final String URL_START = "https://us.";
-    private static final String API_KEY = "33nxy4qemg2zmf9dyvk3qzbpmzsezjtg";
-    private static final String LOCALE = "en_US";
+    public GuildPresenter(Context context, Guild guild){
 
-
-    public GuildController init(Context context, Guild guild){ //DI
-
-        c = context;
+        this.context = context;
         this.guild = guild;
 
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
-                .addInterceptor(new HttpLoggingInterceptor());
+                .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY));
 
         OkHttpClient client = builder.build();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(URL_START+BuildConfig.URL)
+                .baseUrl(BuildConfig.URL_START+BuildConfig.URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client)
                 .build();
 
         guildService = retrofit.create(GuildService.class);
 
-
-        return this;
     }
 
     public void getGuild(Callback<GetGuildMembersResponse> callback){
-        Call<GetGuildMembersResponse> call = guildService.getGuildMembers(guild.getRealm(), guild.getName(), guild.getFields(), LOCALE, API_KEY);
+        Call<GetGuildMembersResponse> call = guildService.getGuildMembers(guild.getRealm(), guild.getName(), guild.getFields(), BuildConfig.LOCALE, BuildConfig.API_KEY);
         call.enqueue(callback);
     }
 
