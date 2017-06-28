@@ -8,6 +8,7 @@ import com.gomart.guildbuddy.model.CharacterClass;
 import com.gomart.guildbuddy.model.CharacterRace;
 import com.gomart.guildbuddy.model.Guild;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
 
@@ -104,6 +105,10 @@ public class DataManager {
     /*PICASSO*/
     public void loadPicture(Context c, String url, ImageView view){
         picasso.with(c).load(url).into(view);
+    }
+
+    public void loadPictureBitmap(Context c, String url, Target target){
+        picasso.with(c).load(url).into(target);
     }
 
 }

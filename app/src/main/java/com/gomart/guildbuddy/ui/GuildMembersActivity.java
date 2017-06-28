@@ -193,26 +193,33 @@ public class GuildMembersActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                ArrayList<Character> auxCharacters= new ArrayList<>();
-                auxCharacters = characters;
+                ArrayList<Character> auxCharacters = new ArrayList(characters);
                 int position;
                 for (Character character: characters) {
-                    if (!query.toLowerCase().equals(character.getName().toLowerCase())){
+                    if (!character.getName().toLowerCase().contains(query.toLowerCase())){
                         position = auxCharacters.indexOf(character);
                         auxCharacters.remove(position);
-                        recyclerView.removeViewAt(position);
-
                     }
                 }
-                /*adapter.notifyItemRemoved(position);
-                adapter.notifyItemRangeChanged(position, auxCharacters.size());*/
-                //adapter.notifyDataSetChanged();
+                adapter = new GuildMembersAdapter(GuildMembersActivity.this, auxCharacters);
+                recyclerView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
 
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                adapter = new GuildMembersAdapter(GuildMembersActivity.this, characters);
+                recyclerView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
                 return false;
             }
         });
