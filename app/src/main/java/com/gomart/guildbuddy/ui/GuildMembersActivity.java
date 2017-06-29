@@ -21,6 +21,8 @@ import android.widget.ProgressBar;
 import com.gomart.guildbuddy.Constants;
 import com.gomart.guildbuddy.GuildBuddy;
 import com.gomart.guildbuddy.R;
+import com.gomart.guildbuddy.helper.DialogHelper;
+import com.gomart.guildbuddy.helper.NetworkHelper;
 import com.gomart.guildbuddy.network.GetGuildMembersResponse;
 import com.gomart.guildbuddy.ui.adapter.GuildMembersAdapter;
 import com.gomart.guildbuddy.ui.presenter.GuildPresenter;
@@ -92,15 +94,18 @@ public class GuildMembersActivity extends AppCompatActivity {
 
         guildPresenter = new GuildPresenter(this, g);
 
-        getGuildMembers();
+        if (NetworkHelper.isConnected(this)){
+            getGuildMembers();
 
-        recyclerView = (RecyclerView)findViewById(R.id.recycler);
+            recyclerView = (RecyclerView)findViewById(R.id.recycler);
 
-        layoutManager = new GridLayoutManager(this, 2);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addItemDecoration(new CustomGridItem(2, dpToPixel(10), true));
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-
+            layoutManager = new GridLayoutManager(this, 2);
+            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.addItemDecoration(new CustomGridItem(2, dpToPixel(10), true));
+            recyclerView.setItemAnimator(new DefaultItemAnimator());
+        }else{
+            DialogHelper.showOkDialog(this, getString(R.string.oops), getString(R.string.no_connection));
+        }
     }
 
     private void getGuildMembers(){
@@ -170,9 +175,13 @@ public class GuildMembersActivity extends AppCompatActivity {
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent i = new Intent(GuildMembersActivity.this, GuildMemberProfileActivity.class);
-                    i.putExtra(GUILD_MEMBER, characters.get(position));
-                    startActivity(i);
+                    if (NetworkHelper.isConnected(GuildMembersActivity.this)){
+                        Intent i = new Intent(GuildMembersActivity.this, GuildMemberProfileActivity.class);
+                        i.putExtra(GUILD_MEMBER, characters.get(position));
+                        startActivity(i);
+                    }else{
+                        DialogHelper.showOkDialog(GuildMembersActivity.this, getString(R.string.oops), getString(R.string.no_connection));
+                    }
                 }
             });
         }
@@ -193,17 +202,21 @@ public class GuildMembersActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                ArrayList<Character> auxCharacters = new ArrayList(characters);
-                int position;
-                for (Character character: characters) {
-                    if (!character.getName().toLowerCase().contains(query.toLowerCase())){
-                        position = auxCharacters.indexOf(character);
-                        auxCharacters.remove(position);
+                if (NetworkHelper.isConnected(getApplicationContext())){
+                    ArrayList<Character> auxCharacters = new ArrayList(characters);
+                    int position;
+                    for (Character character: characters) {
+                        if (!character.getName().toLowerCase().contains(query.toLowerCase())){
+                            position = auxCharacters.indexOf(character);
+                            auxCharacters.remove(position);
+                        }
                     }
+                    adapter = new GuildMembersAdapter(GuildMembersActivity.this, auxCharacters);
+                    recyclerView.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
+                }else{
+                    DialogHelper.showOkDialog(GuildMembersActivity.this, getString(R.string.oops), getString(R.string.no_connection));
                 }
-                adapter = new GuildMembersAdapter(GuildMembersActivity.this, auxCharacters);
-                recyclerView.setAdapter(adapter);
-                adapter.notifyDataSetChanged();
 
                 return false;
             }

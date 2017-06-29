@@ -11,15 +11,16 @@ import android.widget.EditText;
 import com.gomart.guildbuddy.GuildBuddy;
 import com.gomart.guildbuddy.R;
 import com.gomart.guildbuddy.Constants;
+import com.gomart.guildbuddy.helper.NetworkHelper;
 import com.gomart.guildbuddy.network.GetCharacterClassesResponse;
 import com.gomart.guildbuddy.network.GetCharacterRacesResponse;
-import com.gomart.guildbuddy.ui.presenter.CharacterController;
 import com.gomart.guildbuddy.helper.CheckBlankHelper;
 import com.gomart.guildbuddy.helper.DialogHelper;
 import com.gomart.guildbuddy.manager.DataManager;
 import com.gomart.guildbuddy.model.CharacterClass;
 import com.gomart.guildbuddy.model.CharacterRace;
 import com.gomart.guildbuddy.model.Guild;
+import com.gomart.guildbuddy.ui.presenter.GuildMemberPresenter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String GUILD_MEMBERS = "members";
 
-    private CharacterController charCtrl;
+    private GuildMemberPresenter presenter;
 
     private CharacterClass charClass;
     private CharacterRace charRace;
@@ -59,10 +60,14 @@ public class MainActivity extends AppCompatActivity {
         edtGuildName = (EditText)findViewById(R.id.edt_guildName);
         btnSearch = (Button)findViewById(R.id.btn_search);
 
-        charCtrl = new CharacterController();
+        presenter = new GuildMemberPresenter(this, edtRealm.getText().toString());
 
-        getClasseNames();
-        getRaceNames();
+        if (NetworkHelper.isConnected(this)){
+            getClassNames();
+            getRaceNames();
+        }else{
+            DialogHelper.showOkDialog(this, getString(R.string.oops), getString(R.string.no_connection));
+        }
 
         if (dataManager.get(Constants.KEY_GUILD, "") != null && dataManager.get(Constants.KEY_GUILD, "").length() > 0 && dataManager.get(Constants.KEY_REALM, "") != null && dataManager.get(Constants.KEY_REALM, "").length() > 0){
             edtGuildName.setText(dataManager.get(Constants.KEY_GUILD, ""));
@@ -72,39 +77,40 @@ public class MainActivity extends AppCompatActivity {
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                List<EditText> inputs = new ArrayList<>();
-                inputs.add(edtRealm);
-                inputs.add(edtGuildName);
+                if (NetworkHelper.isConnected(getApplicationContext())){
+                    List<EditText> inputs = new ArrayList<>();
+                    inputs.add(edtRealm);
+                    inputs.add(edtGuildName);
 
-                if (CheckBlankHelper.checkBlankFields(inputs)){
-                    //Guild g = new Guild(edtGuildName.getText().toString(), edtRealm.getText().toString());
-                    Guild g = new Guild(edtGuildName.getText().toString(), edtRealm.getText().toString());
+                    if (!CheckBlankHelper.emptyFieldExist(inputs)){
+                        Guild g = new Guild(edtGuildName.getText().toString(), edtRealm.getText().toString());
 
-                    ArrayList<String> fields = new ArrayList<>();
-                    fields.add(GUILD_MEMBERS);
+                        ArrayList<String> fields = new ArrayList<>();
+                        fields.add(GUILD_MEMBERS);
 
-                    g.setFields(fields);
+                        g.setFields(fields);
 
-                    dataManager.save(Constants.KEY_GUILD, edtGuildName.getText().toString());
-                    dataManager.save(Constants.KEY_REALM, edtRealm.getText().toString());
+                        dataManager.save(Constants.KEY_GUILD, edtGuildName.getText().toString());
+                        dataManager.save(Constants.KEY_REALM, edtRealm.getText().toString());
 
-                    Intent i = new Intent(MainActivity.this, GuildMembersActivity.class);
-                    i.putExtra(Constants.KEY_CLASSES, classes);
-                    i.putExtra(Constants.KEY_RACES, races);
-                    i.putExtra(Constants.KEY_GUILD, g);
-                    startActivity(i);
+                        Intent i = new Intent(MainActivity.this, GuildMembersActivity.class);
+                        i.putExtra(Constants.KEY_CLASSES, classes);
+                        i.putExtra(Constants.KEY_RACES, races);
+                        i.putExtra(Constants.KEY_GUILD, g);
+                        startActivity(i);
+                    }else{
+                        DialogHelper.showOkDialog(MainActivity.this, getString(R.string.oops), getString(R.string.empty_fields));
+                    }
                 }else{
-                    DialogHelper.showOkDialog(MainActivity.this, getString(R.string.oops), getString(R.string.empty_fields));
+                    DialogHelper.showOkDialog(MainActivity.this, getString(R.string.oops), getString(R.string.no_connection));
                 }
             }
         });
 
     }
 
-    private void getClasseNames(){
-        charCtrl.init(this);
-
-        charCtrl.getClassName(new Callback<GetCharacterClassesResponse>() {
+    private void getClassNames(){
+        presenter.getClassName(new Callback<GetCharacterClassesResponse>() {
             @Override
             public void onResponse(Call<GetCharacterClassesResponse> call, Response<GetCharacterClassesResponse> response) {
                 classes = new ArrayList<>();
@@ -128,9 +134,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getRaceNames(){
-        charCtrl.init(this);
-
-        charCtrl.getRaceName(new Callback<GetCharacterRacesResponse>() {
+        presenter.getRaceName(new Callback<GetCharacterRacesResponse>() {
             @Override
             public void onResponse(Call<GetCharacterRacesResponse> call, Response<GetCharacterRacesResponse> response) {
                 races = new ArrayList<>();
@@ -144,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<GetCharacterRacesResponse> call, Throwable t) {
-                Log.d("#CLASSNAME", t.getMessage());
+                Log.d("#RACENAME", t.getMessage());
             }
         });
 

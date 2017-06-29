@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -24,10 +23,12 @@ import com.gomart.guildbuddy.BuildConfig;
 import com.gomart.guildbuddy.Constants;
 import com.gomart.guildbuddy.GuildBuddy;
 import com.gomart.guildbuddy.R;
+import com.gomart.guildbuddy.helper.DialogHelper;
+import com.gomart.guildbuddy.helper.NetworkHelper;
 import com.gomart.guildbuddy.manager.DataManager;
 import com.gomart.guildbuddy.model.Character;
 import com.gomart.guildbuddy.network.GetCharacterResponse;
-import com.gomart.guildbuddy.ui.presenter.GuildMemberProfilePresenter;
+import com.gomart.guildbuddy.ui.presenter.GuildMemberPresenter;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -47,7 +48,7 @@ public class GuildMemberProfileActivity extends AppCompatActivity {
     private ImageView thumb;
     private ProgressBar progress;
 
-    private GuildMemberProfilePresenter presenter;
+    private GuildMemberPresenter presenter;
 
     @Inject
     DataManager dataManager;
@@ -60,7 +61,7 @@ public class GuildMemberProfileActivity extends AppCompatActivity {
         GuildBuddy.app().getAppComponent().inject(this);
 
         Intent intent = getIntent();
-        final Character c = intent.getParcelableExtra(GuildMembersActivity.GUILD_MEMBER);
+        final Character character = intent.getParcelableExtra(GuildMembersActivity.GUILD_MEMBER);
         //Log.d("INTENT", i.getParcelableExtra(GuildMembersActivity.GUILD_MEMBER).toString());
 
         name = (TextView) findViewById(R.id.txt_name);
@@ -76,38 +77,44 @@ public class GuildMemberProfileActivity extends AppCompatActivity {
 
         LinearLayout layout = (LinearLayout) findViewById(R.id.container_profile);
         for (int i = 0; i < layout.getChildCount(); i++) {
-            Log.d("CHILD", layout.getChildCount() + " " + i);
+            //Log.d("CHILD", layout.getChildCount() + " " + i);
             setTextViewBold((TextView) layout.getChildAt(i));
             i++;
         }
 
         progress.setVisibility(View.VISIBLE);
-        presenter = new GuildMemberProfilePresenter(this, c, dataManager.get(Constants.KEY_REALM, ""));
-        presenter.getCharacter(new Callback<GetCharacterResponse>() {
-            @Override
-            public void onResponse(Call<GetCharacterResponse> call, Response<GetCharacterResponse> response) {
-                //Log.d("PROFILE", response.body().toString());
-                progress.setVisibility(View.GONE);
-                itemLevel.setText(String.valueOf(response.body().getItems().getAvarageItemLevel()));
-                pvp.setText(String.valueOf(response.body().getTotalHonorableKills()));
-            }
+        presenter = new GuildMemberPresenter(this, dataManager.get(Constants.KEY_REALM, ""));
+        presenter.setCharacterFields(character);
+        if (NetworkHelper.isConnected(this)){
+            presenter.getCharacter(new Callback<GetCharacterResponse>() {
+                @Override
+                public void onResponse(Call<GetCharacterResponse> call, Response<GetCharacterResponse> response) {
+                    //Log.d("PROFILE", response.body().toString());
+                    progress.setVisibility(View.GONE);
+                    itemLevel.setText(String.valueOf(response.body().getItems().getAvarageItemLevel()));
+                    pvp.setText(String.valueOf(response.body().getTotalHonorableKills()));
 
-            @Override
-            public void onFailure(Call<GetCharacterResponse> call, Throwable t) {
+                    String url = BuildConfig.CHAR_URL + character.getThumbnail() + "?locale=" + BuildConfig.LOCALE + "?apikey=" + BuildConfig.API_KEY;
+                    dataManager.loadPictureBitmap(GuildMemberProfileActivity.this, url, target);
+                }
 
-            }
-        });
+                @Override
+                public void onFailure(Call<GetCharacterResponse> call, Throwable t) {
+
+                }
+            });
+        }else{
+            DialogHelper.showOkDialog(this, getString(R.string.oops), getString(R.string.no_connection));
+        }
+
+        name.setText(character.getName());
+        race.setText(dataManager.getCharacterRace(character.getRace()));
+        charClass.setText(dataManager.getCharacterClass(character.getCharClass()));
+        role.setText(character.getSpec().getName());
+        level.setText(String.valueOf(character.getLevel()));
+        achievements.setText(String.valueOf(character.getAchievementPoints()));
 
 
-        name.setText(c.getName());
-        race.setText(dataManager.getCharacterRace(c.getRace()));
-        charClass.setText(dataManager.getCharacterClass(c.getCharClass()));
-        role.setText(c.getSpec().getName());
-        level.setText(String.valueOf(c.getLevel()));
-        achievements.setText(String.valueOf(c.getAchievementPoints()));
-
-        String url = BuildConfig.CHAR_URL + c.getThumbnail() + "?locale=" + BuildConfig.LOCALE + "?apikey=" + BuildConfig.API_KEY;
-        dataManager.loadPictureBitmap(this, url, target);
 
     }
 

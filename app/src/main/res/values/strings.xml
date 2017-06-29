@@ -1,9 +1,11 @@
 <resources>
     <string name="app_name">GuildBuddy</string>
 
+    <!--GENERAL MESSAGES-->
     <string name="oops">Oops!</string>
     <string name="guild_not_found">Guild not found.</string>
     <string name="empty_fields">Please, fill out all fields</string>
+    <string name="no_connection">No internet connection detected. Please, connect to the internet.</string>
 
     <!--GUILD MEMBERS-->
     <string name="search">Search</string>
