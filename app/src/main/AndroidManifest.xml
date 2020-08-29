@@ -12,7 +12,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/LegionTheme"
-        android:name=".GuildBuddy">
+        android:name=".App">
         <activity android:name=".ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,7 +24,7 @@
             android:label="Members">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MainActivity" />
+                android:value=".ui.MainActivity_old" />
         </activity>
         <activity android:name=".ui.GuildMemberProfileActivity"
             android:label="Profile">

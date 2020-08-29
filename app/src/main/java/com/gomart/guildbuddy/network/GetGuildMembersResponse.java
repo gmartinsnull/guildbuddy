@@ -1,6 +1,6 @@
 package com.gomart.guildbuddy.network;
 
-import com.gomart.guildbuddy.model.GuildMember;
+import com.gomart.guildbuddy.vo.GuildMember;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import java.util.ArrayList;
 /**
  * Created by glaubermartins on 2016-11-24.
  */
-
+@Deprecated
 public class GetGuildMembersResponse {
 
     @SerializedName("level")

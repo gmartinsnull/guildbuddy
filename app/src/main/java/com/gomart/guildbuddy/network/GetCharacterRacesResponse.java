@@ -1,6 +1,6 @@
 package com.gomart.guildbuddy.network;
 
-import com.gomart.guildbuddy.model.CharacterRace;
+import com.gomart.guildbuddy.vo.CharacterRace;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;

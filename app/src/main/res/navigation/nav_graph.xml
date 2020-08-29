@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/mainFragment">
+
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="com.gomart.guildbuddy.ui.MainFragment"
+        android:label="Guild Search"
+        tools:layout="@layout/fragment_main">
+        <action
+            android:id="@+id/actionMainToRoster"
+            app:destination="@id/rosterFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/rosterFragment"
+        android:name="com.gomart.guildbuddy.ui.RosterFragment"
+        android:label="Roster"
+        tools:layout="@layout/fragment_roster">
+        <argument
+            android:name="guildName"
+            app:argType="string" />
+        <argument
+            android:name="realm"
+            app:argType="string" />
+    </fragment>
+</navigation>

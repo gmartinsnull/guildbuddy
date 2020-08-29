@@ -1,18 +1,17 @@
 package com.gomart.guildbuddy.ui.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.gomart.guildbuddy.BuildConfig;
-import com.gomart.guildbuddy.GuildBuddy;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.gomart.guildbuddy.R;
 import com.gomart.guildbuddy.manager.DataManager;
-import com.gomart.guildbuddy.model.Character;
+import com.gomart.guildbuddy.vo.Character;
 
 import java.util.ArrayList;
 
@@ -21,7 +20,7 @@ import javax.inject.Inject;
 /**
  * Created by glaubermartins on 2016-11-29.
  */
-
+@Deprecated
 public class GuildMembersAdapter extends RecyclerView.Adapter<GuildMembersAdapter.CustomViewHolder> {
 
     private Context c;
@@ -33,7 +32,7 @@ public class GuildMembersAdapter extends RecyclerView.Adapter<GuildMembersAdapte
     public GuildMembersAdapter(Context c, ArrayList<Character> characters) {
         this.c = c;
         this.characters = characters;
-        GuildBuddy.app().getAppComponent().inject(this);
+        //GuildBuddy.app().getAppComponent().inject(this);
     }
 
     public class CustomViewHolder extends RecyclerView.ViewHolder{
@@ -53,20 +52,20 @@ public class GuildMembersAdapter extends RecyclerView.Adapter<GuildMembersAdapte
 
     @Override
     public CustomViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.guild_member_row, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_item, parent, false);
         return new CustomViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(CustomViewHolder holder, int position) {
         Character character =  characters.get(position);
-        holder.name.setText(character.getName());
-        holder.level.setText(String.valueOf(character.getLevel()));
-        holder.race.setText(dataManager.getCharacterRace(character.getRace()));
-        holder.charClass.setText(dataManager.getCharacterClass(character.getCharClass()));
+        /*holder.name.setText(character.name);
+        holder.level.setText(String.valueOf(character.level));
+        holder.race.setText(dataManager.getCharacterRace(character.race));
+        holder.charClass.setText(dataManager.getCharacterClass(character.charClass));
 
-        String url = BuildConfig.CHAR_URL+character.getThumbnail()+"?locale="+BuildConfig.LOCALE+"?apikey="+BuildConfig.API_KEY;
-        dataManager.loadPicture(c, url, holder.thumb);
+        String url = BuildConfig.CHAR_URL+ character.thumbnail +"?locale="+BuildConfig.LOCALE+"?apikey="+BuildConfig.API_KEY;
+        dataManager.loadPicture(c, url, holder.thumb);*/
     }
 
     @Override

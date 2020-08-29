@@ -1,16 +1,14 @@
 package com.gomart.guildbuddy.network;
 
-import com.gomart.guildbuddy.model.Character;
-
 /**
  * Created by glaubermartins on 2017-06-14.
  */
-
+@Deprecated
 public class GetCharacterResponse {
     private int achievementPoints;
     private int totalHonorableKills;
     private String thumbnail;
-    private Character.Items items;
+    //private Character.Items items;
 
     public int getAchievementPoints() {
         return achievementPoints;
@@ -36,11 +34,11 @@ public class GetCharacterResponse {
         this.thumbnail = thumbnail;
     }
 
-    public Character.Items getItems() {
+    /*public Character.Items getItems() {
         return items;
     }
 
     public void setItems(Character.Items items) {
         this.items = items;
-    }
+    }*/
 }

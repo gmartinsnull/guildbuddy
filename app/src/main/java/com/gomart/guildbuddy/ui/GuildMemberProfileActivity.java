@@ -8,29 +8,23 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.gomart.guildbuddy.BuildConfig;
 import com.gomart.guildbuddy.Constants;
-import com.gomart.guildbuddy.GuildBuddy;
 import com.gomart.guildbuddy.R;
 import com.gomart.guildbuddy.helper.DialogHelper;
 import com.gomart.guildbuddy.helper.NetworkHelper;
 import com.gomart.guildbuddy.manager.DataManager;
-import com.gomart.guildbuddy.model.Character;
+import com.gomart.guildbuddy.vo.Character;
 import com.gomart.guildbuddy.network.GetCharacterResponse;
 import com.gomart.guildbuddy.ui.presenter.GuildMemberPresenter;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import javax.inject.Inject;
 
@@ -42,6 +36,7 @@ import retrofit2.Response;
  * Created by glaubermartins on 2017-01-27.
  */
 
+@Deprecated
 public class GuildMemberProfileActivity extends AppCompatActivity {
 
     private TextView name, race, charClass, level, achievements, itemLevel, pvp, role;
@@ -56,9 +51,9 @@ public class GuildMemberProfileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_member_profile);
+        setContentView(R.layout.fragment_profile);
 
-        GuildBuddy.app().getAppComponent().inject(this);
+        //GuildBuddy.app().getAppComponent().inject(this);
 
         Intent intent = getIntent();
         final Character character = intent.getParcelableExtra(GuildMembersActivity.GUILD_MEMBER);
@@ -68,7 +63,7 @@ public class GuildMemberProfileActivity extends AppCompatActivity {
         race = (TextView) findViewById(R.id.txt_race);
         charClass = (TextView) findViewById(R.id.txt_class);
         role = (TextView) findViewById(R.id.txt_role);
-        thumb = (FloatingActionButton) findViewById(R.id.thumbnail);
+        //thumb = (FloatingActionButton) findViewById(R.id.thumbnail);
         level = (TextView) findViewById(R.id.txt_level);
         itemLevel = (TextView) findViewById(R.id.txt_item_lvl);
         achievements = (TextView) findViewById(R.id.txt_achievements);
@@ -91,11 +86,11 @@ public class GuildMemberProfileActivity extends AppCompatActivity {
                 public void onResponse(Call<GetCharacterResponse> call, Response<GetCharacterResponse> response) {
                     //Log.d("PROFILE", response.body().toString());
                     progress.setVisibility(View.GONE);
-                    itemLevel.setText(String.valueOf(response.body().getItems().getAvarageItemLevel()));
+                    //itemLevel.setText(String.valueOf(response.body().getItems().getAvarageItemLevel()));
                     pvp.setText(String.valueOf(response.body().getTotalHonorableKills()));
 
-                    String url = BuildConfig.CHAR_URL + character.getThumbnail() + "?locale=" + BuildConfig.LOCALE + "?apikey=" + BuildConfig.API_KEY;
-                    dataManager.loadPictureBitmap(GuildMemberProfileActivity.this, url, target);
+                    //String url = BuildConfig.CHAR_URL + character.thumbnail + "?locale=" + BuildConfig.LOCALE + "?apikey=" + BuildConfig.API_KEY;
+                    //dataManager.loadPictureBitmap(GuildMemberProfileActivity.this, url, target);
                 }
 
                 @Override
@@ -107,12 +102,12 @@ public class GuildMemberProfileActivity extends AppCompatActivity {
             DialogHelper.showOkDialog(this, getString(R.string.oops), getString(R.string.no_connection));
         }
 
-        name.setText(character.getName());
-        race.setText(dataManager.getCharacterRace(character.getRace()));
-        charClass.setText(dataManager.getCharacterClass(character.getCharClass()));
-        role.setText(character.getSpec().getName());
-        level.setText(String.valueOf(character.getLevel()));
-        achievements.setText(String.valueOf(character.getAchievementPoints()));
+//        name.setText(character.name);
+//        race.setText(dataManager.getCharacterRace(character.race));
+//        charClass.setText(dataManager.getCharacterClass(character.charClass));
+//        role.setText(character.spec.name);
+//        level.setText(String.valueOf(character.level));
+//        achievements.setText(String.valueOf(character.achievementPoints));
 
 
 
@@ -139,7 +134,7 @@ public class GuildMemberProfileActivity extends AppCompatActivity {
         return output;
     }
 
-    private Target target = new Target() {
+    /*private Target target = new Target() {
         @Override
         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
             thumb.setImageBitmap(cropImageRound(bitmap));
@@ -152,5 +147,5 @@ public class GuildMemberProfileActivity extends AppCompatActivity {
         @Override
         public void onPrepareLoad(Drawable placeHolderDrawable) {
         }
-    };
+    };*/
 }

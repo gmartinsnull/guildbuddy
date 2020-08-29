@@ -1,50 +1,32 @@
 package com.gomart.guildbuddy.ui;
 
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
-import android.util.Log;
-import android.util.TypedValue;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.widget.ProgressBar;
 
 import com.gomart.guildbuddy.Constants;
-import com.gomart.guildbuddy.GuildBuddy;
 import com.gomart.guildbuddy.R;
 import com.gomart.guildbuddy.helper.DialogHelper;
 import com.gomart.guildbuddy.helper.NetworkHelper;
-import com.gomart.guildbuddy.network.GetGuildMembersResponse;
-import com.gomart.guildbuddy.ui.adapter.GuildMembersAdapter;
 import com.gomart.guildbuddy.ui.presenter.GuildPresenter;
 import com.gomart.guildbuddy.manager.DataManager;
-import com.gomart.guildbuddy.model.Character;
-import com.gomart.guildbuddy.model.CharacterClass;
-import com.gomart.guildbuddy.model.CharacterRace;
-import com.gomart.guildbuddy.model.Guild;
-import com.gomart.guildbuddy.model.GuildMember;
+import com.gomart.guildbuddy.vo.Character;
+import com.gomart.guildbuddy.vo.CharacterClass;
+import com.gomart.guildbuddy.vo.CharacterRace;
+import com.gomart.guildbuddy.vo.Guild;
 
 import java.util.ArrayList;
 
 import javax.inject.Inject;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
 /**
  * Created by glaubermartins on 2016-11-29.
  */
 
+@Deprecated
 public class GuildMembersActivity extends AppCompatActivity {
 
     public static final String GUILD_MEMBER = "GUILD_MEMBER";
@@ -54,9 +36,9 @@ public class GuildMembersActivity extends AppCompatActivity {
     private ArrayList<CharacterRace> races;
     private ArrayList<Character> characters;
 
-    private RecyclerView recyclerView;
+    /*private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
-    private RecyclerView.LayoutManager layoutManager;
+    private RecyclerView.LayoutManager layoutManager;*/
 
     private ProgressBar progress;
 
@@ -66,9 +48,9 @@ public class GuildMembersActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_guild_members);
+        setContentView(R.layout.fragment_roster);
 
-        GuildBuddy.app().getAppComponent().inject(this);
+        //GuildBuddy.app().getAppComponent().inject(this);
 
         Intent i = getIntent();
 
@@ -95,20 +77,20 @@ public class GuildMembersActivity extends AppCompatActivity {
         guildPresenter = new GuildPresenter(this, g);
 
         if (NetworkHelper.isConnected(this)){
-            getGuildMembers();
+            //getGuildMembers();
 
-            recyclerView = (RecyclerView)findViewById(R.id.recycler);
+            /*recyclerView = (RecyclerView)findViewById(R.id.recycler);
 
             layoutManager = new GridLayoutManager(this, 2);
             recyclerView.setLayoutManager(layoutManager);
             recyclerView.addItemDecoration(new CustomGridItem(2, dpToPixel(10), true));
-            recyclerView.setItemAnimator(new DefaultItemAnimator());
+            recyclerView.setItemAnimator(new DefaultItemAnimator());*/
         }else{
             DialogHelper.showOkDialog(this, getString(R.string.oops), getString(R.string.no_connection));
         }
     }
 
-    private void getGuildMembers(){
+    /*private void getGuildMembers(){
         progress.setVisibility(View.VISIBLE);
         guildPresenter.getGuild(new Callback<GetGuildMembersResponse>() {
             @Override
@@ -117,11 +99,11 @@ public class GuildMembersActivity extends AppCompatActivity {
                 characters = new ArrayList<>();
                 for (GuildMember gm:response.body().getMembers()) {
                     for (int i=0; i < classes.size(); i++) {
-                        if (gm.getCharacter().getCharClass() == classes.get(i).getId()){
+                        if (gm.character.charClass == classes.get(i).getId()){
                             for (int j=0; j < races.size(); j++) {
-                                if (gm.getCharacter().getRace() == races.get(j).getId()){
+                                if (gm.character.race == races.get(j).getId()){
                                     //Log.d("#MEMBER", gm.getCharacter().getName()+" / "+classes.get(i).getName()+" / "+races.get(j).getName());
-                                    characters.add(gm.getCharacter());
+                                    characters.add(gm.character);
                                 }
                             }
                         }
@@ -206,14 +188,14 @@ public class GuildMembersActivity extends AppCompatActivity {
                     ArrayList<Character> auxCharacters = new ArrayList(characters);
                     int position;
                     for (Character character: characters) {
-                        if (!character.getName().toLowerCase().contains(query.toLowerCase())){
+                        *//*if (!character.name.toLowerCase().contains(query.toLowerCase())){
                             position = auxCharacters.indexOf(character);
                             auxCharacters.remove(position);
-                        }
+                        }*//*
                     }
-                    adapter = new GuildMembersAdapter(GuildMembersActivity.this, auxCharacters);
+                    *//*adapter = new GuildMembersAdapter(GuildMembersActivity.this, auxCharacters);
                     recyclerView.setAdapter(adapter);
-                    adapter.notifyDataSetChanged();
+                    adapter.notifyDataSetChanged();*//*
                 }else{
                     DialogHelper.showOkDialog(GuildMembersActivity.this, getString(R.string.oops), getString(R.string.no_connection));
                 }
@@ -230,13 +212,13 @@ public class GuildMembersActivity extends AppCompatActivity {
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
-                adapter = new GuildMembersAdapter(GuildMembersActivity.this, characters);
+                *//*adapter = new GuildMembersAdapter(GuildMembersActivity.this, characters);
                 recyclerView.setAdapter(adapter);
-                adapter.notifyDataSetChanged();
+                adapter.notifyDataSetChanged();*//*
                 return false;
             }
         });
 
         return true;
-    }
+    }*/
 }
