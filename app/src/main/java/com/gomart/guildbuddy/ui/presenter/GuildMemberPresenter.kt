@@ -25,7 +25,6 @@ class GuildMemberPresenter(context: Context?, private val realm: String) {
         this.character = character
         val fields = ArrayList<String>()
         fields.add(CHAR_ITEMS)
-        this.character!!.fields = fields
     }
 
     fun getCharacter(callback: Callback<GetCharacterResponse>?) {

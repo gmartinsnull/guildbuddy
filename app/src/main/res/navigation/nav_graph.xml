@@ -21,10 +21,10 @@
         android:label="Roster"
         tools:layout="@layout/fragment_roster">
         <argument
-            android:name="guildName"
+            android:name="realm"
             app:argType="string" />
         <argument
-            android:name="realm"
+            android:name="guildName"
             app:argType="string" />
     </fragment>
 </navigation>

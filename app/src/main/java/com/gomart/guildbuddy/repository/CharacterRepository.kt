@@ -11,10 +11,18 @@ class CharacterRepository @Inject constructor(
         private var service: CharacterService
 ) {
     suspend fun getCharacter(
-            name: String,
             realm: String,
+            name: String,
             namespace: String,
             locale: String,
             token: String
-    ) = service.getCharacter(name, realm, namespace, locale, token)
+    ) = service.getCharacter(realm, name, namespace, locale, token)
+
+    suspend fun getAvatar(
+            realm: String,
+            name: String,
+            namespace: String,
+            locale: String,
+            token: String
+    ) = service.getAvatar(realm, name, namespace, locale, token)
 }

@@ -3,6 +3,7 @@ package com.gomart.guildbuddy.network.services
 import com.gomart.guildbuddy.network.CharacterResponse
 import com.gomart.guildbuddy.network.GetCharacterClassesResponse
 import com.gomart.guildbuddy.network.GetCharacterRacesResponse
+import com.gomart.guildbuddy.vo.MediaResponse
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -22,7 +23,15 @@ interface CharacterService {
     suspend fun getCharacter(
             @Path("realm") realm: String,
             @Path("name") name: String,
-            @Path("namespace") namespace: String,
-            @Path("locale") locale: String,
-            @Query("token") token: String): CharacterResponse
+            @Query("namespace") namespace: String,
+            @Query("locale") locale: String,
+            @Query("access_token") token: String): CharacterResponse
+
+    @GET("profile/wow/character/{realm}/{name}/character-media")
+    suspend fun getAvatar(
+            @Path("realm") realm: String,
+            @Path("name") name: String,
+            @Query("namespace") namespace: String,
+            @Query("locale") locale: String,
+            @Query("access_token") token: String): MediaResponse
 }

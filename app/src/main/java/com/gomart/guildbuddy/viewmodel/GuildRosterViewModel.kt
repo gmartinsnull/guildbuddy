@@ -10,12 +10,16 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.gomart.guildbuddy.BuildConfig
 import com.gomart.guildbuddy.data.SharedPrefs
+import com.gomart.guildbuddy.repository.CharacterRepository
 import com.gomart.guildbuddy.repository.GuildRepository
+import com.gomart.guildbuddy.vo.Character
 import com.gomart.guildbuddy.vo.Resource
 import com.gomart.guildbuddy.vo.Token
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  *   Created by gmartins on 2020-08-28
@@ -23,42 +27,68 @@ import kotlinx.coroutines.launch
  */
 class GuildRosterViewModel @ViewModelInject constructor(
         @ApplicationContext private val context: Context,
-        private val repository: GuildRepository,
+        private val guildRepo: GuildRepository,
+        private val characterRepo: CharacterRepository,
         private val sharedPrefs: SharedPrefs,
         @Assisted private val savedStateHandle: SavedStateHandle //needed by Hilt
 ) : ViewModel() {
+    private val queryMap = MutableLiveData<Map<String, String>>()
+
     val data = liveData(Dispatchers.IO) {
         try {
-            Log.d("TEST", "sharedprefs: ${sharedPrefs.getSharedPrefsByKey("token")}")
             if (checkConnection()) {
-                val result = repository.getGuildRoster(
-                        "tichondrius",
-                        "chicken-lords",
-                        BuildConfig.NAMESPACE,
-                        BuildConfig.LOCALE,
-                        "${sharedPrefs.getSharedPrefsByKey("token")}"
-                )
-                emit(Resource.success(result))
+                queryMap.value?.get("realm")?.let { realm ->
+                    queryMap.value?.get("guild")?.let { guild ->
+                        val resultRosterMeta = guildRepo.getGuildRoster(
+                                realm,
+                                guild,
+                                BuildConfig.NAMESPACE,
+                                BuildConfig.LOCALE,
+                                "${sharedPrefs.getSharedPrefsByKey("token")}"
+                        )
+
+                        val result: ArrayList<Character> = arrayListOf()
+                        resultRosterMeta.members.forEach { guildMember ->
+                            val characterResponse = characterRepo.getCharacter(
+                                    realm,
+                                    guildMember.character.name.toLowerCase(Locale.ROOT),
+                                    BuildConfig.NAMESPACE,
+                                    BuildConfig.LOCALE,
+                                    "${sharedPrefs.getSharedPrefsByKey("token")}"
+                            )
+                            result.add(Character(
+                                    characterResponse.name,
+                                    characterResponse.charRace.name,
+                                    characterResponse.level,
+                                    characterRepo.getAvatar(
+                                            realm,
+                                            characterResponse.name.toLowerCase(Locale.ROOT),
+                                            BuildConfig.NAMESPACE,
+                                            BuildConfig.LOCALE,
+                                            "${sharedPrefs.getSharedPrefsByKey("token")}"
+                                    ).avatar,
+                                    characterResponse.achievementPoints,
+                                    characterResponse.itemLevel,
+                                    0,
+                                    characterResponse.charSpec.name,
+                                    characterResponse.charClass.name
+                            ))
+                        }
+                        //todo save in db
+                        emit(Resource.success(result))
+                    }
+                }
             }
         } catch (exception: NetworkErrorException) {
-            //emit(Resource.Error<Throwable>(Throwable(exception)))
+            emit(Resource.error<Throwable>(exception.message.toString(), null))
         }
     }
 
-    /**
-     * fetches token from blizzard api
-     */
-    fun fetchToken() {
-        viewModelScope.launch(Dispatchers.IO) {
-            saveToken(repository.fetchToken())
-        }
-    }
-
-    /**
-     * saves token in shared prefs
-     */
-    private fun saveToken(token: Token) {
-        sharedPrefs.setSharedPrefsByKey("token", token.accessToken)
+    fun setGuildSearch(realmName: String, guildName: String) {
+        queryMap.value = mapOf(
+                "realm" to realmName,
+                "guild" to guildName
+        )
     }
 
     /**

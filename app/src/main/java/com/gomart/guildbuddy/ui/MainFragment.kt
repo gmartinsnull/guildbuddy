@@ -1,15 +1,13 @@
 package com.gomart.guildbuddy.ui
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import com.gomart.guildbuddy.BuildConfig
 import com.gomart.guildbuddy.R
 import com.gomart.guildbuddy.viewmodel.GuildRosterViewModel
+import com.gomart.guildbuddy.viewmodel.GuildSearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_main.*
 
@@ -19,23 +17,27 @@ import kotlinx.android.synthetic.main.fragment_main.*
  */
 @AndroidEntryPoint
 class MainFragment : Fragment(R.layout.fragment_main) {
-    private val viewModel: GuildRosterViewModel by viewModels()
+    private val viewModel: GuildSearchViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.fetchToken()
+        val searchData = viewModel.getSearchData()
+        if (searchData.isNotEmpty() && searchData.size == 2) {
+            edtRealm.setText(searchData[0])
+            edtGuildName.setText(searchData[1])
+        }
 
         btnSearch.setOnClickListener {
-            viewModel.data.observe(viewLifecycleOwner, Observer {
-                Log.d("test", "${it.status} | ${it.data}")
-            })
-            /*findNavController().navigate(
+            findNavController().navigate(
                     MainFragmentDirections.actionMainToRoster(
-                            edtRealm.text.toString(),
-                            edtGuildName.text.toString()
+                            edtRealm.text.toString().replace(" ", "-"),
+                            edtGuildName.text.toString().replace(" ", "-")
                     )
-            )*/
+            )
+
+            viewModel.storeSearchData(edtRealm.text.toString(), edtGuildName.text.toString())
         }
     }
 }
