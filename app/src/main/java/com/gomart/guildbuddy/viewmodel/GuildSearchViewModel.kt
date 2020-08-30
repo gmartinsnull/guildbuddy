@@ -1,7 +1,5 @@
 package com.gomart.guildbuddy.viewmodel
 
-import android.content.Context
-import android.util.Log
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.SavedStateHandle
@@ -10,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.gomart.guildbuddy.data.SharedPrefs
 import com.gomart.guildbuddy.repository.GuildRepository
 import com.gomart.guildbuddy.vo.Token
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -19,7 +16,6 @@ import kotlinx.coroutines.launch
  *   Description:
  */
 class GuildSearchViewModel @ViewModelInject constructor(
-        @ApplicationContext private val context: Context,
         private val repository: GuildRepository,
         private val sharedPrefs: SharedPrefs,
         @Assisted
@@ -31,7 +27,6 @@ class GuildSearchViewModel @ViewModelInject constructor(
     fun fetchToken() {
         viewModelScope.launch(Dispatchers.IO) {
             val token = repository.fetchToken()
-            Log.d("TEST", "fetchToken: $token")
             saveToken(token)
         }
     }

@@ -4,20 +4,19 @@ import android.accounts.NetworkErrorException
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.util.Log
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.gomart.guildbuddy.BuildConfig
+import com.gomart.guildbuddy.data.CharacterDao
 import com.gomart.guildbuddy.data.SharedPrefs
+import com.gomart.guildbuddy.network.CharacterResponse
 import com.gomart.guildbuddy.repository.CharacterRepository
 import com.gomart.guildbuddy.repository.GuildRepository
 import com.gomart.guildbuddy.vo.Character
 import com.gomart.guildbuddy.vo.Resource
-import com.gomart.guildbuddy.vo.Token
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -29,6 +28,7 @@ class GuildRosterViewModel @ViewModelInject constructor(
         @ApplicationContext private val context: Context,
         private val guildRepo: GuildRepository,
         private val characterRepo: CharacterRepository,
+        private val characterDao: CharacterDao,
         private val sharedPrefs: SharedPrefs,
         @Assisted private val savedStateHandle: SavedStateHandle //needed by Hilt
 ) : ViewModel() {
@@ -47,6 +47,7 @@ class GuildRosterViewModel @ViewModelInject constructor(
                                 "${sharedPrefs.getSharedPrefsByKey("token")}"
                         )
 
+                        //fetch guild members individually
                         val result: ArrayList<Character> = arrayListOf()
                         resultRosterMeta.members.forEach { guildMember ->
                             val characterResponse = characterRepo.getCharacter(
@@ -56,26 +57,15 @@ class GuildRosterViewModel @ViewModelInject constructor(
                                     BuildConfig.LOCALE,
                                     "${sharedPrefs.getSharedPrefsByKey("token")}"
                             )
-                            result.add(Character(
-                                    characterResponse.name,
-                                    characterResponse.charRace.name,
-                                    characterResponse.level,
-                                    characterRepo.getAvatar(
-                                            realm,
-                                            characterResponse.name.toLowerCase(Locale.ROOT),
-                                            BuildConfig.NAMESPACE,
-                                            BuildConfig.LOCALE,
-                                            "${sharedPrefs.getSharedPrefsByKey("token")}"
-                                    ).avatar,
-                                    characterResponse.achievementPoints,
-                                    characterResponse.itemLevel,
-                                    0,
-                                    characterResponse.charSpec.name,
-                                    characterResponse.charClass.name
-                            ))
+                            result.add(buildCharacter(characterResponse, realm))
                         }
-                        //todo save in db
-                        emit(Resource.success(result))
+                        if (characterDao.getAll().isEmpty() || !isNewGuild(guild)) {
+                            characterDao.insert(result)
+                        } else {
+                            characterDao.deleteAll()
+                            characterDao.insert(result)
+                        }
+                        emit(Resource.success(characterDao.getAll()))
                     }
                 }
             }
@@ -84,6 +74,40 @@ class GuildRosterViewModel @ViewModelInject constructor(
         }
     }
 
+    /**
+     * builds character object from api call response
+     */
+    private suspend fun buildCharacter(characterResponse: CharacterResponse, realmName: String): Character {
+        return Character(
+                characterResponse.id,
+                characterResponse.name,
+                characterResponse.charRace.name,
+                characterResponse.level,
+                characterRepo.getAvatar(
+                        realmName,
+                        characterResponse.name.toLowerCase(Locale.ROOT),
+                        BuildConfig.NAMESPACE,
+                        BuildConfig.LOCALE,
+                        "${sharedPrefs.getSharedPrefsByKey("token")}"
+                ).avatar,
+                characterResponse.achievementPoints,
+                characterResponse.itemLevel,
+                0,
+                characterResponse.charSpec.name,
+                characterResponse.charClass.name
+        )
+    }
+
+    /**
+     * checks whether user is searching new guild
+     */
+    private fun isNewGuild(guildName: String): Boolean {
+        return sharedPrefs.getSharedPrefsByKey("guild") != guildName.replace("-", "")
+    }
+
+    /**
+     * set search fields for api request
+     */
     fun setGuildSearch(realmName: String, guildName: String) {
         queryMap.value = mapOf(
                 "realm" to realmName,

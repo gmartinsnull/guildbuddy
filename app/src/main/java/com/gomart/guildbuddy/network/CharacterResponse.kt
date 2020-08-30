@@ -10,6 +10,7 @@ import com.google.gson.annotations.SerializedName
  *   Description:
  */
 data class CharacterResponse(
+        val id: Int,
         val name: String,
         @SerializedName("character_class")
         val charClass: CharacterClass,

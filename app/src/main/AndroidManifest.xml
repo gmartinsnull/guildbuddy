@@ -20,18 +20,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.GuildMembersActivity"
-            android:label="Members">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MainActivity_old" />
-        </activity>
-        <activity android:name=".ui.GuildMemberProfileActivity"
-            android:label="Profile">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.GuildMembersActivity" />
-        </activity>
     </application>
 
 </manifest>

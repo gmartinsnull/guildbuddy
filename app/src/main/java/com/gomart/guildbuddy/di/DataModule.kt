@@ -2,6 +2,8 @@ package com.gomart.guildbuddy.di
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.room.Room
+import com.gomart.guildbuddy.data.AppDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,5 +23,12 @@ object DataModule {
     fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences =
             context.getSharedPreferences("sharedprefs", Context.MODE_PRIVATE)
 
-    //todo implement Room
+    @DatabaseClient
+    @Singleton
+    @Provides
+    fun provideDatabase(@ApplicationContext context: Context): AppDatabase =
+            Room.databaseBuilder(
+                    context,
+                    AppDatabase::class.java, "guildbuddy_db"
+            ).build()
 }
