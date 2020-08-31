@@ -28,7 +28,6 @@ class GuildRosterViewModel @ViewModelInject constructor(
         @ApplicationContext private val context: Context,
         private val guildRepo: GuildRepository,
         private val characterRepo: CharacterRepository,
-        private val characterDao: CharacterDao,
         private val sharedPrefs: SharedPrefs,
         @Assisted private val savedStateHandle: SavedStateHandle //needed by Hilt
 ) : ViewModel() {
@@ -59,13 +58,13 @@ class GuildRosterViewModel @ViewModelInject constructor(
                             )
                             result.add(buildCharacter(characterResponse, realm))
                         }
-                        if (characterDao.getAll().isEmpty() || !isNewGuild(guild)) {
-                            characterDao.insert(result)
+                        if (characterRepo.getAll().isEmpty() || !isNewGuild(guild)) {
+                            characterRepo.saveCharacters(result)
                         } else {
-                            characterDao.deleteAll()
-                            characterDao.insert(result)
+                            characterRepo.deleteCharacters()
+                            characterRepo.saveCharacters(result)
                         }
-                        emit(Resource.success(characterDao.getAll()))
+                        emit(Resource.success(characterRepo.getAll()))
                     }
                 }
             }

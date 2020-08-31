@@ -18,15 +18,12 @@ android {
 
         buildConfigField 'String', 'URL', '"https://us.api.blizzard.com/"'
         buildConfigField 'String', 'URL_TOKEN', '"https://us.battle.net/"'
-        //buildConfigField 'String', 'URL_START', '"https://us."'
         buildConfigField 'String', 'CHAR_URL', '"https://render-us.worldofwarcraft.com/character/"'
         buildConfigField 'String', 'LOCALE', '"en_US"'
         buildConfigField 'String', 'NAMESPACE', '"profile-us"'
-        buildConfigField 'String', 'API_KEY', '"10a706d5b5b445bda040772571515014"'
         buildConfigField 'String', 'CLIENT_ID', '"10a706d5b5b445bda040772571515014"'
         buildConfigField 'String', 'CLIENT_SECRET', '"de2RV6e5LOjkSycnV995MzYJJPCb5pOt"'
         buildConfigField 'String', 'GRANT_TYPE', '"client_credentials"'
-        //buildConfigField 'String', 'API_KEY', '"33nxy4qemg2zmf9dyvk3qzbpmzsezjtg"'
     }
     buildTypes {
         release {
@@ -47,6 +44,9 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
+    }
+    testOptions {
+        unitTests.includeAndroidResources = true
     }
 }
 
@@ -111,7 +111,19 @@ dependencies {
     //PICASSO
     implementation 'com.squareup.picasso:picasso:2.71828'
 
-    //TEST
+    //MOCKITO
+    testImplementation 'org.mockito:mockito-core:2.25.0'
+    testImplementation "org.mockito:mockito-all:1.10.19"
+    testImplementation "org.mockito:mockito-android:2.25.0"
+    testImplementation "com.squareup.okhttp3:mockwebserver:4.0.0"
+
+    //TESTING
     testImplementation 'junit:junit:4.12'
+    testImplementation 'androidx.test:core:1.3.0'
+    testImplementation 'androidx.test:runner:1.3.0'
+    testImplementation 'androidx.test:rules:1.3.0'
+    testImplementation 'androidx.test.ext:junit:1.1.2'
+    testImplementation "androidx.arch.core:core-runtime:2.1.0"
+    testImplementation "androidx.arch.core:core-testing:2.1.0"
 
 }

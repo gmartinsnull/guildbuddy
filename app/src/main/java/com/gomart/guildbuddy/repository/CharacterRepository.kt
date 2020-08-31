@@ -1,6 +1,8 @@
 package com.gomart.guildbuddy.repository
 
+import com.gomart.guildbuddy.data.CharacterDao
 import com.gomart.guildbuddy.network.services.CharacterService
+import com.gomart.guildbuddy.vo.Character
 import javax.inject.Inject
 
 /**
@@ -8,7 +10,8 @@ import javax.inject.Inject
  *   Description:
  */
 class CharacterRepository @Inject constructor(
-        private var service: CharacterService
+        private var service: CharacterService,
+        private val characterDao: CharacterDao
 ) {
     suspend fun getCharacter(
             realm: String,
@@ -25,4 +28,8 @@ class CharacterRepository @Inject constructor(
             locale: String,
             token: String
     ) = service.getAvatar(realm, name, namespace, locale, token)
+
+    suspend fun saveCharacters(characters: List<Character>) = characterDao.insert(characters)
+    suspend fun getAll() = characterDao.getAll()
+    suspend fun deleteCharacters() = characterDao.deleteAll()
 }

@@ -1,0 +1,116 @@
+{
+  "_links": {
+    "self": {
+      "href": "https://us.api.blizzard.com/profile/wow/character/tichondrius/bukky?namespace=profile-us"
+    }
+  },
+  "id": 198247935,
+  "name": "Bukky",
+  "gender": {
+    "type": "MALE",
+    "name": "Male"
+  },
+  "faction": {
+    "type": "HORDE",
+    "name": "Horde"
+  },
+  "race": {
+    "key": {
+      "href": "https://us.api.blizzard.com/data/wow/playable-race/27?namespace=static-8.3.7_35114-us"
+    },
+    "name": "Nightborne",
+    "id": 27
+  },
+  "character_class": {
+    "key": {
+      "href": "https://us.api.blizzard.com/data/wow/playable-class/4?namespace=static-8.3.7_35114-us"
+    },
+    "name": "Rogue",
+    "id": 4
+  },
+  "active_spec": {
+    "key": {
+      "href": "https://us.api.blizzard.com/data/wow/playable-specialization/259?namespace=static-8.3.7_35114-us"
+    },
+    "name": "Assassination",
+    "id": 259
+  },
+  "realm": {
+    "key": {
+      "href": "https://us.api.blizzard.com/data/wow/realm/11?namespace=dynamic-us"
+    },
+    "name": "Tichondrius",
+    "id": 11,
+    "slug": "tichondrius"
+  },
+  "guild": {
+    "key": {
+      "href": "https://us.api.blizzard.com/data/wow/guild/tichondrius/chicken-lords?namespace=profile-us"
+    },
+    "name": "Chicken Lords",
+    "id": 89338041,
+    "realm": {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/realm/11?namespace=dynamic-us"
+      },
+      "name": "Tichondrius",
+      "id": 11,
+      "slug": "tichondrius"
+    },
+    "faction": {
+      "type": "HORDE",
+      "name": "Horde"
+    }
+  },
+  "level": 120,
+  "experience": 0,
+  "achievement_points": 13355,
+  "achievements": {
+    "href": "https://us.api.blizzard.com/profile/wow/character/tichondrius/bukky/achievements?namespace=profile-us"
+  },
+  "titles": {
+    "href": "https://us.api.blizzard.com/profile/wow/character/tichondrius/bukky/titles?namespace=profile-us"
+  },
+  "pvp_summary": {
+    "href": "https://us.api.blizzard.com/profile/wow/character/tichondrius/bukky/pvp-summary?namespace=profile-us"
+  },
+  "encounters": {
+    "href": "https://us.api.blizzard.com/profile/wow/character/tichondrius/bukky/encounters?namespace=profile-us"
+  },
+  "media": {
+    "href": "https://us.api.blizzard.com/profile/wow/character/tichondrius/bukky/character-media?namespace=profile-us"
+  },
+  "last_login_timestamp": 1597473747000,
+  "average_item_level": 472,
+  "equipped_item_level": 470,
+  "specializations": {
+    "href": "https://us.api.blizzard.com/profile/wow/character/tichondrius/bukky/specializations?namespace=profile-us"
+  },
+  "statistics": {
+    "href": "https://us.api.blizzard.com/profile/wow/character/tichondrius/bukky/statistics?namespace=profile-us"
+  },
+  "mythic_keystone_profile": {
+    "href": "https://us.api.blizzard.com/profile/wow/character/tichondrius/bukky/mythic-keystone-profile?namespace=profile-us"
+  },
+  "equipment": {
+    "href": "https://us.api.blizzard.com/profile/wow/character/tichondrius/bukky/equipment?namespace=profile-us"
+  },
+  "appearance": {
+    "href": "https://us.api.blizzard.com/profile/wow/character/tichondrius/bukky/appearance?namespace=profile-us"
+  },
+  "collections": {
+    "href": "https://us.api.blizzard.com/profile/wow/character/tichondrius/bukky/collections?namespace=profile-us"
+  },
+  "reputations": {
+    "href": "https://us.api.blizzard.com/profile/wow/character/tichondrius/bukky/reputations?namespace=profile-us"
+  },
+  "quests": {
+    "href": "https://us.api.blizzard.com/profile/wow/character/tichondrius/bukky/quests?namespace=profile-us"
+  },
+  "achievements_statistics": {
+    "href": "https://us.api.blizzard.com/profile/wow/character/tichondrius/bukky/achievements/statistics?namespace=profile-us"
+  },
+  "professions": {
+    "href": "https://us.api.blizzard.com/profile/wow/character/tichondrius/bukky/professions?namespace=profile-us"
+  }
+}
