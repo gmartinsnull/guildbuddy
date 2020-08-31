@@ -2,10 +2,10 @@ package com.gomart.guildbuddy
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.gomart.guildbuddy.network.services.CharacterService
+import com.gomart.guildbuddy.network.services.OAuthService
 import kotlinx.coroutines.runBlocking
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import okio.Okio
 import okio.buffer
 import okio.source
 import org.hamcrest.CoreMatchers.`is`
@@ -31,6 +31,7 @@ class CharacterServiceTest {
     val instantExecutorRule = InstantTaskExecutorRule()
 
     private lateinit var service: CharacterService
+    private lateinit var oathService: OAuthService
 
     private lateinit var mockWebServer: MockWebServer
 
@@ -43,6 +44,12 @@ class CharacterServiceTest {
                 //.addCallAdapterFactory(LiveDataCallAdapterFactory())
                 .build()
                 .create(CharacterService::class.java)
+        oathService = Retrofit.Builder()
+                .baseUrl(mockWebServer.url(BuildConfig.URL_TOKEN))
+                .addConverterFactory(GsonConverterFactory.create())
+                //.addCallAdapterFactory(LiveDataCallAdapterFactory())
+                .build()
+                .create(OAuthService::class.java)
     }
 
     @After
@@ -58,8 +65,11 @@ class CharacterServiceTest {
                 "bukky",
                 BuildConfig.NAMESPACE,
                 BuildConfig.LOCALE,
-                "USYzEnvB1UFDUhqfbmTQxgVjqmmTmuzmZi"
-                //todo renew token
+                oathService.fetchToken(
+                        BuildConfig.CLIENT_ID,
+                        BuildConfig.CLIENT_SECRET,
+                        BuildConfig.GRANT_TYPE
+                ).accessToken
         )
 
         assertThat(response, IsNull.notNullValue())
