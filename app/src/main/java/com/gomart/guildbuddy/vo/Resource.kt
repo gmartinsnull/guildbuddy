@@ -1,21 +1,18 @@
 package com.gomart.guildbuddy.vo
 
+import org.xml.sax.ErrorHandler
+
 /**
  *   Created by gmartins on 2020-08-28
  *   Description:
  */
-data class Resource<out T>(val status: Status, val data: T?, val message: String?) {
-    companion object {
-        fun <T> success(data: T?): Resource<T> {
-            return Resource(Status.SUCCESS, data, null)
-        }
+sealed class Resource<out T: Any> {
+    class Success<out T : Any>(val data: T) : Resource<T>()
 
-        fun <T> error(msg: String, data: T?): Resource<T> {
-            return Resource(Status.ERROR, data, msg)
-        }
+    class Error(
+            private val exception: Throwable,
+            val message: String = exception.message ?: "An unknown error occurred"
+    ) : Resource<Nothing>()
 
-        fun <T> loading(data: T?): Resource<T> {
-            return Resource(Status.LOADING, data, null)
-        }
-    }
+    class Loading(val isLoading: Boolean) : Resource<Nothing>()
 }

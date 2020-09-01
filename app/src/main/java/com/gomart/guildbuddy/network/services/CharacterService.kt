@@ -2,6 +2,7 @@ package com.gomart.guildbuddy.network.services
 
 import com.gomart.guildbuddy.network.CharacterResponse
 import com.gomart.guildbuddy.vo.MediaResponse
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -16,7 +17,7 @@ interface CharacterService {
             @Path("name") name: String,
             @Query("namespace") namespace: String,
             @Query("locale") locale: String,
-            @Query("access_token") token: String): CharacterResponse
+            @Query("access_token") token: String): Response<CharacterResponse>
 
     @GET("profile/wow/character/{realm}/{name}/character-media")
     suspend fun getAvatar(

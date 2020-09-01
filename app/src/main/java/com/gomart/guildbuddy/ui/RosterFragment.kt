@@ -14,10 +14,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.gomart.guildbuddy.R
 import com.gomart.guildbuddy.databinding.FragmentRosterBinding
 import com.gomart.guildbuddy.viewmodel.GuildRosterViewModel
-import com.gomart.guildbuddy.vo.Character
-import com.gomart.guildbuddy.vo.Status
+import com.gomart.guildbuddy.vo.Resource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_roster.*
+import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 
 /**
@@ -42,10 +42,11 @@ class RosterFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.data.observe(viewLifecycleOwner, Observer { response ->
-            when (response.status) {
-                Status.SUCCESS -> {
+        viewModel.roster.observe(viewLifecycleOwner, Observer { response ->
+            when (response) {
+                is Resource.Success -> {
                     progress.visibility = View.GONE
+                    txtError.visibility = View.GONE
 
                     binding.recycler.apply {
                         setHasFixedSize(true)
@@ -56,17 +57,13 @@ class RosterFragment : Fragment() {
                         layoutManager = gridLayoutManager
 
                         adapter = rosterRecyclerViewAdapter
-                        if (response.data is List<*>)
-                            rosterRecyclerViewAdapter.setData(response.data.filterIsInstance<Character>())
+                        rosterRecyclerViewAdapter.setData(response.data)
                     }
                 }
-                Status.ERROR -> {
+                is Resource.Error -> {
                     progress.visibility = View.GONE
                     txtError.visibility = View.VISIBLE
                     txtError.text = response.message
-                }
-                Status.LOADING -> {
-                    progress.visibility = View.VISIBLE
                 }
             }
         })

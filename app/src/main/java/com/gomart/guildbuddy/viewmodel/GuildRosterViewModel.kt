@@ -1,24 +1,19 @@
 package com.gomart.guildbuddy.viewmodel
 
-import android.accounts.NetworkErrorException
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
-import com.gomart.guildbuddy.BuildConfig
-import com.gomart.guildbuddy.data.CharacterDao
 import com.gomart.guildbuddy.data.SharedPrefs
-import com.gomart.guildbuddy.network.CharacterResponse
 import com.gomart.guildbuddy.repository.CharacterRepository
 import com.gomart.guildbuddy.repository.GuildRepository
-import com.gomart.guildbuddy.vo.Character
+import com.gomart.guildbuddy.vo.Guild
 import com.gomart.guildbuddy.vo.Resource
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
-import java.util.*
-import kotlin.collections.ArrayList
+import kotlinx.coroutines.flow.collect
 
 /**
  *   Created by gmartins on 2020-08-28
@@ -33,75 +28,47 @@ class GuildRosterViewModel @ViewModelInject constructor(
 ) : ViewModel() {
     private val queryMap = MutableLiveData<Map<String, String>>()
 
-    val data = liveData(Dispatchers.IO) {
-        try {
-            if (checkConnection()) {
-                queryMap.value?.get("realm")?.let { realm ->
-                    queryMap.value?.get("guild")?.let { guild ->
-                        val resultRosterMeta = guildRepo.getGuildRoster(
-                                realm,
-                                guild,
-                                BuildConfig.NAMESPACE,
-                                BuildConfig.LOCALE,
-                                "${sharedPrefs.getSharedPrefsByKey("token")}"
-                        )
-
-                        //fetch guild members individually
-                        val result: ArrayList<Character> = arrayListOf()
-                        resultRosterMeta.members.forEach { guildMember ->
-                            val characterResponse = characterRepo.getCharacter(
-                                    realm,
-                                    guildMember.character.name.toLowerCase(Locale.ROOT),
-                                    BuildConfig.NAMESPACE,
-                                    BuildConfig.LOCALE,
-                                    "${sharedPrefs.getSharedPrefsByKey("token")}"
-                            )
-                            result.add(buildCharacter(characterResponse, realm))
+    val roster = liveData(Dispatchers.IO) {
+        if (checkConnection()) {
+            queryMap.value?.get("realm")?.let { realm ->
+                queryMap.value?.get("guild")?.let { guild ->
+                    val storedGuild = guildRepo.getGuild()
+                    if (storedGuild != null && !isNewGuild(storedGuild.name)) {
+                        emit(Resource.Success(characterRepo.getAllCharacters()))
+                    } else {
+                        guildRepo.deleteGuild()
+                        guildRepo.addGuild(Guild(guild, realm))
+                        guildRepo.getGuildRoster(realm, guild).collect { resource ->
+                            when (resource) {
+                                is Resource.Success -> {
+                                    characterRepo.deleteAllCharacters()
+                                    resource.data.forEach { guildCharacter ->
+                                        characterRepo.getCharacter(realm, guildCharacter.name).collect {
+                                            when (it) {
+                                                is Resource.Error -> {
+                                                    emit(Resource.Error(Throwable(), "Character not found: ${guildCharacter.name}"))
+                                                }
+                                            }
+                                        }
+                                    }
+                                    emit(Resource.Success(characterRepo.getAllCharacters()))
+                                }
+                                is Resource.Error -> {
+                                    emit(Resource.Error(Throwable(), resource.message))
+                                }
+                            }
                         }
-                        if (characterRepo.getAll().isEmpty() || !isNewGuild(guild)) {
-                            characterRepo.saveCharacters(result)
-                        } else {
-                            characterRepo.deleteCharacters()
-                            characterRepo.saveCharacters(result)
-                        }
-                        emit(Resource.success(characterRepo.getAll()))
                     }
                 }
             }
-        } catch (exception: NetworkErrorException) {
-            emit(Resource.error<Throwable>(exception.message.toString(), null))
         }
-    }
-
-    /**
-     * builds character object from api call response
-     */
-    private suspend fun buildCharacter(characterResponse: CharacterResponse, realmName: String): Character {
-        return Character(
-                characterResponse.id,
-                characterResponse.name,
-                characterResponse.charRace.name,
-                characterResponse.level,
-                characterRepo.getAvatar(
-                        realmName,
-                        characterResponse.name.toLowerCase(Locale.ROOT),
-                        BuildConfig.NAMESPACE,
-                        BuildConfig.LOCALE,
-                        "${sharedPrefs.getSharedPrefsByKey("token")}"
-                ).avatar,
-                characterResponse.achievementPoints,
-                characterResponse.itemLevel,
-                0,
-                characterResponse.charSpec.name,
-                characterResponse.charClass.name
-        )
     }
 
     /**
      * checks whether user is searching new guild
      */
     private fun isNewGuild(guildName: String): Boolean {
-        return sharedPrefs.getSharedPrefsByKey("guild") != guildName.replace("-", "")
+        return sharedPrefs.getSharedPrefsByKey("guild") != guildName.replace("-", " ")
     }
 
     /**

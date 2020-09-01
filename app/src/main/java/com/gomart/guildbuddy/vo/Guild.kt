@@ -4,12 +4,12 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 /**
- *   Created by gmartins on 2020-08-29
+ *   Created by gmartins on 2020-08-31
  *   Description:
  */
 @Entity
-data class GuildCharacter(
+data class Guild (
         @PrimaryKey
-        val id: Int,
-        val name: String
+        val name: String,
+        val realm: String
 )

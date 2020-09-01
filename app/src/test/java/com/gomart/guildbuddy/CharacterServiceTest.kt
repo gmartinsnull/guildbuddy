@@ -73,8 +73,8 @@ class CharacterServiceTest {
         )
 
         assertThat(response, IsNull.notNullValue())
-        assertThat(response.charClass.name, `is`("Rogue"))
-        assertThat(response.name, `is`("Bukky"))
+        assertThat(response.body()?.charClass?.name, `is`("Rogue"))
+        assertThat(response.body()?.name, `is`("Bukky"))
     }
 
     private fun enqueueResponse(fileName: String, headers: Map<String, String> = emptyMap()) {

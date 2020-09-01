@@ -1,5 +1,7 @@
 package com.gomart.guildbuddy.di
 
+import com.gomart.guildbuddy.data.AppDatabase
+import com.gomart.guildbuddy.data.GuildDao
 import com.gomart.guildbuddy.network.services.GuildService
 import dagger.Module
 import dagger.Provides
@@ -19,4 +21,9 @@ object GuildModule {
     @Provides
     fun provideGuildService(@RetrofitClient retrofit: Retrofit): GuildService =
             retrofit.create(GuildService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideGuildDao(@DatabaseClient appDatabase: AppDatabase): GuildDao =
+            appDatabase.guildDao()
 }
