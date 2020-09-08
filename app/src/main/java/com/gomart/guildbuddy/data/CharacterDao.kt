@@ -1,6 +1,7 @@
 package com.gomart.guildbuddy.data
 
 import androidx.room.*
+import com.gomart.guildbuddy.testing.OpenForTesting
 import com.gomart.guildbuddy.vo.Character
 
 /**
@@ -8,6 +9,7 @@ import com.gomart.guildbuddy.vo.Character
  *   Description:
  */
 @Dao
+@OpenForTesting
 interface CharacterDao {
         @Query("SELECT * FROM character")
         suspend fun getAll(): List<Character>

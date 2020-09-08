@@ -5,6 +5,6 @@ package com.gomart.guildbuddy.vo
  *   Description:
  */
 data class CharacterSpec(
-        val int: Int,
+        val id: Int,
         val name: String
 )

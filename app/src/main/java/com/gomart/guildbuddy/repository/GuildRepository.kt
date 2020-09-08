@@ -5,6 +5,7 @@ import com.gomart.guildbuddy.data.GuildDao
 import com.gomart.guildbuddy.data.SharedPrefs
 import com.gomart.guildbuddy.network.services.GuildService
 import com.gomart.guildbuddy.network.services.OAuthService
+import com.gomart.guildbuddy.testing.OpenForTesting
 import com.gomart.guildbuddy.vo.Guild
 import com.gomart.guildbuddy.vo.Resource
 import kotlinx.coroutines.flow.flow
@@ -14,6 +15,7 @@ import javax.inject.Inject
  *   Created by gmartins on 2020-08-28
  *   Description:
  */
+@OpenForTesting
 class GuildRepository @Inject constructor(
         private val guildService: GuildService,
         private val oAuthService: OAuthService,

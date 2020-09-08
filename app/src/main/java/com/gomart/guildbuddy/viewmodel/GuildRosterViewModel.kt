@@ -23,8 +23,7 @@ class GuildRosterViewModel @ViewModelInject constructor(
         @ApplicationContext private val context: Context,
         private val guildRepo: GuildRepository,
         private val characterRepo: CharacterRepository,
-        private val sharedPrefs: SharedPrefs,
-        @Assisted private val savedStateHandle: SavedStateHandle //needed by Hilt
+        private val sharedPrefs: SharedPrefs
 ) : ViewModel() {
     private val queryMap = MutableLiveData<Map<String, String>>()
 
@@ -85,8 +84,8 @@ class GuildRosterViewModel @ViewModelInject constructor(
      * checks for internet connection
      */
     private fun checkConnection(): Boolean {
-        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val result = cm.activeNetwork?.let { network ->
+        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+        val result = cm?.activeNetwork?.let { network ->
             cm.getNetworkCapabilities(network)?.let { networkCapabilities ->
                 (networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
                         || networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI))

@@ -41,13 +41,11 @@ class CharacterServiceTest {
         service = Retrofit.Builder()
                 .baseUrl(mockWebServer.url(BuildConfig.URL))
                 .addConverterFactory(GsonConverterFactory.create())
-                //.addCallAdapterFactory(LiveDataCallAdapterFactory())
                 .build()
                 .create(CharacterService::class.java)
         oathService = Retrofit.Builder()
                 .baseUrl(mockWebServer.url(BuildConfig.URL_TOKEN))
                 .addConverterFactory(GsonConverterFactory.create())
-                //.addCallAdapterFactory(LiveDataCallAdapterFactory())
                 .build()
                 .create(OAuthService::class.java)
     }
