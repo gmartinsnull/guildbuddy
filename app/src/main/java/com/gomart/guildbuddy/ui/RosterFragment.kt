@@ -2,6 +2,7 @@ package com.gomart.guildbuddy.ui
 
 import android.os.Bundle
 import android.view.*
+import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -16,9 +17,7 @@ import com.gomart.guildbuddy.network.NetworkUtils
 import com.gomart.guildbuddy.viewmodel.GuildRosterViewModel
 import com.gomart.guildbuddy.vo.Resource
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.fragment_roster.*
-import kotlinx.android.synthetic.main.fragment_roster.progress
 import javax.inject.Inject
 
 /**
@@ -81,14 +80,22 @@ class RosterFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.roster_menu, menu)
+        (menu.findItem(R.id.search).actionView as SearchView).setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(p0: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(query: String?): Boolean {
+                rosterRecyclerViewAdapter.filter.filter(query)
+                return false
+            }
+        })
         super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.search -> {
-                true
-            }
+            R.id.search -> true
             R.id.changeGuild -> {
                 viewModel.changeGuild()
                 findNavController().navigateUp()
