@@ -66,8 +66,12 @@ class GuildRepository @Inject constructor(
     /**
      * checks whether user is searching same guild
      */
-    fun isSameGuild(guildName: String?): Boolean {
-        return sharedPrefs.getSharedPrefsByKey("guild") == guildName
-    }
+    fun isSameGuild(guildName: String?) = sharedPrefs.getSharedPrefsByKey("guild") == guildName
 
+    suspend fun getGuild() = guildDao.getGuild()?.let {
+        Resource.Success(it)
+    } ?: Resource.Error(Throwable(), "No guild found.")
+
+    suspend fun insertGuild(guild: Guild) = guildDao.insertGuild(guild)
+    suspend fun deleteGuild() = guildDao.deleteGuild()
 }

@@ -5,6 +5,10 @@
         android:icon="@android:drawable/ic_menu_search"
         android:title="@string/search"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
-        app:showAsAction="always"/>
+        app:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/changeGuild"
+        android:title="@string/change_guild"
+        app:showAsAction="never"/>
 
 </menu>

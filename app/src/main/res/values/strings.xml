@@ -10,4 +10,5 @@
 
     <!--GUILD MEMBERS-->
     <string name="search">Search</string>
+    <string name="change_guild">Change Guild</string>
 </resources>

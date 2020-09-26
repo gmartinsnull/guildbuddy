@@ -1,13 +1,12 @@
 package com.gomart.guildbuddy.ui
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,7 +16,9 @@ import com.gomart.guildbuddy.network.NetworkUtils
 import com.gomart.guildbuddy.viewmodel.GuildRosterViewModel
 import com.gomart.guildbuddy.vo.Resource
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.fragment_roster.*
+import kotlinx.android.synthetic.main.fragment_roster.progress
 import javax.inject.Inject
 
 /**
@@ -30,6 +31,7 @@ class RosterFragment : Fragment() {
 
     @Inject
     lateinit var rosterRecyclerViewAdapter: RosterRecyclerViewAdapter
+
     @Inject
     lateinit var networkUtils: NetworkUtils
 
@@ -38,6 +40,7 @@ class RosterFragment : Fragment() {
     private lateinit var binding: FragmentRosterBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        setHasOptionsMenu(true)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_roster, container, false)
         return binding.root
     }
@@ -73,5 +76,25 @@ class RosterFragment : Fragment() {
 
         if (networkUtils.checkConnection())
             viewModel.setGuildSearch(params.realm, params.guildName)
+
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.roster_menu, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.search -> {
+                true
+            }
+            R.id.changeGuild -> {
+                viewModel.changeGuild()
+                findNavController().navigateUp()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }

@@ -9,6 +9,7 @@ import com.gomart.guildbuddy.vo.Guild
 import com.gomart.guildbuddy.vo.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 /**
  *   Created by gmartins on 2020-08-28
@@ -24,6 +25,9 @@ class GuildRosterViewModel @ViewModelInject constructor(
     val roster = guildRequest.switchMap { guild ->
         liveData(viewModelScope.coroutineContext + Dispatchers.IO) {
             if (guildRepo.isSameGuild(guild.name)) {
+                when (guildRepo.getGuild()) {
+                    is Resource.Error -> guildRepo.insertGuild(guild)
+                }
                 emit(Resource.Success(characterRepo.getAllCharacters()))
             } else {
                 guildRepo.getGuildRoster(guild.realm, guild.name).collect { resource ->
@@ -56,4 +60,9 @@ class GuildRosterViewModel @ViewModelInject constructor(
     fun setGuildSearch(realmName: String, guildName: String) {
         guildRequest.value = Guild(guildName, realmName)
     }
+
+    /**
+     * deletes guild from database
+     */
+    fun changeGuild() = viewModelScope.launch(Dispatchers.IO) { guildRepo.deleteGuild() }
 }

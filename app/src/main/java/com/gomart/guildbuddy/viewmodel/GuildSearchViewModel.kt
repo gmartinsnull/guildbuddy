@@ -4,6 +4,7 @@ import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.gomart.guildbuddy.data.SharedPrefs
 import com.gomart.guildbuddy.repository.GuildRepository
@@ -48,5 +49,12 @@ class GuildSearchViewModel @ViewModelInject constructor(
             }
         }
         return listOf()
+    }
+
+    /**
+     * get existing guild from db
+     */
+    fun getGuild() = liveData(viewModelScope.coroutineContext + Dispatchers.IO) {
+        emit(repository.getGuild())
     }
 }
