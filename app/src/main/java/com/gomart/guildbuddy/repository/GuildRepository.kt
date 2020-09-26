@@ -22,14 +22,20 @@ class GuildRepository @Inject constructor(
         private val guildDao: GuildDao,
         private val sharedPrefs: SharedPrefs
 ) {
-    fun getGuildRoster(realm: String, guildName: String) = flow {
-        emit(fetchGuildRoster(
-                realm,
-                guildName,
-                BuildConfig.NAMESPACE,
-                BuildConfig.LOCALE,
-                "${sharedPrefs.getSharedPrefsByKey("token")}")
-        )
+    suspend fun getGuildRoster(realm: String, guildName: String) = flow {
+        sharedPrefs.getSharedPrefsByKey("guild")?.let {
+            guildDao.deleteGuild()
+            guildDao.insertGuild(Guild(guildName, realm))
+            sharedPrefs.setSharedPrefsByKey("realm", realm)
+            sharedPrefs.setSharedPrefsByKey("guild", guildName)
+            emit(fetchGuildRoster(
+                    realm,
+                    guildName,
+                    BuildConfig.NAMESPACE,
+                    BuildConfig.LOCALE,
+                    "${sharedPrefs.getSharedPrefsByKey("token")}")
+            )
+        } ?: emit(Resource.Error(Throwable(), "roster not found"))
     }
 
     private suspend fun fetchGuildRoster(
@@ -57,7 +63,11 @@ class GuildRepository @Inject constructor(
             BuildConfig.GRANT_TYPE
     )
 
-    suspend fun addGuild(guild: Guild) = guildDao.insertGuild(guild)
-    suspend fun getGuild() = guildDao.getGuild()
-    suspend fun deleteGuild() = guildDao.deleteGuild()
+    /**
+     * checks whether user is searching same guild
+     */
+    fun isSameGuild(guildName: String?): Boolean {
+        return sharedPrefs.getSharedPrefsByKey("guild") == guildName
+    }
+
 }

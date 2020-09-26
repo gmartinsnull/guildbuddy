@@ -36,7 +36,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
-        debug{
+        debug {
             minifyEnabled false
         }
     }
@@ -52,6 +52,7 @@ android {
     }
     testOptions {
         unitTests.includeAndroidResources = true
+        unitTests.returnDefaultValues = true
     }
     sourceSets {
         androidTest.java.srcDirs += "src/test-common/java"
@@ -102,6 +103,7 @@ dependencies {
 
     //COROUTINES
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.8'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.3.8'
 
     //ROOM
     implementation "androidx.room:room-runtime:2.2.5"

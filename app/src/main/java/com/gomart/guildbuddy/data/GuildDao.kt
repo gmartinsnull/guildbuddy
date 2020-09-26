@@ -13,19 +13,19 @@ interface GuildDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertGuild(guild: Guild)
 
-    @Query("SELECT * FROM guild")
+    @Query("SELECT * FROM Guild")
     suspend fun getGuild(): Guild?
 
-    @Query("DELETE FROM guild")
+    @Query("DELETE FROM Guild")
     suspend fun deleteGuild()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRoster(guildCharacters: List<GuildCharacter>)
 
     @Transaction
-    @Query("SELECT * FROM guildcharacter")
+    @Query("SELECT * FROM GuildCharacter")
     fun getRoster(): List<GuildCharacter>
 
-    @Query("DELETE FROM guildcharacter")
+    @Query("DELETE FROM GuildCharacter")
     suspend fun deleteAll()
 }

@@ -1,10 +1,13 @@
 package com.gomart.guildbuddy.di
 
+import android.content.Context
 import com.gomart.guildbuddy.BuildConfig
+import com.gomart.guildbuddy.network.NetworkUtils
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -44,4 +47,7 @@ object NetworkModule {
                 .build()
     }
 
+    @Singleton
+    @Provides
+    fun provideNetworkUtils(@ApplicationContext context: Context) = NetworkUtils(context)
 }

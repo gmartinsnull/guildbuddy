@@ -1,18 +1,19 @@
 package com.gomart.guildbuddy
 
-import android.content.Context
-import android.content.SharedPreferences
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import com.gomart.guildbuddy.util.mock
-import com.gomart.guildbuddy.data.SharedPrefs
 import com.gomart.guildbuddy.repository.CharacterRepository
 import com.gomart.guildbuddy.repository.GuildRepository
 import com.gomart.guildbuddy.viewmodel.GuildRosterViewModel
-import com.gomart.guildbuddy.vo.Character
-import com.gomart.guildbuddy.vo.GuildCharacter
-import com.gomart.guildbuddy.vo.Resource
+import com.gomart.guildbuddy.vo.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -30,37 +31,64 @@ class GuildRosterViewModelTest {
     @JvmField
     val instantExecutor = InstantTaskExecutorRule()
 
-    private val repository = mock(GuildRepository::class.java)
-    private val charRepository = mock(CharacterRepository::class.java)
-    private val context = mock(Context::class.java)
-    private val sharedPreferences = mock(SharedPreferences::class.java)
-    private lateinit var viewModel: GuildRosterViewModel
+    private val guildRepo = mock(GuildRepository::class.java)
+    private val charRepo = mock(CharacterRepository::class.java)
+    private val dispatcher = TestCoroutineDispatcher()
 
     @Before
     fun init() {
-        val sharedPrefs = SharedPrefs(sharedPreferences)
-        viewModel = GuildRosterViewModel(context, repository, charRepository, sharedPrefs)
+        Dispatchers.setMain(dispatcher)
+    }
+
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
+        dispatcher.cleanupTestCoroutines()
     }
 
     @Test
-    fun empty() {
-        val result = mock<Observer<Resource<List<Character>>>>()
-        viewModel.roster.observeForever(result)
-        verifyNoMoreInteractions(repository)
-    }
+    fun basic() = runBlocking {
+        val charactersResponse = mock<List<Character>>()
+        `when`(charRepo.getAllCharacters())
+                .thenReturn(charactersResponse)
 
-    //todo TBI(to be implemented)
-    /*@Test
-    fun basic() {
-        val roster = mock<List<GuildCharacter>>()
-        `when`(repository.getGuildRoster("tichondrius", "chicken lords"))
-                .thenReturn(flowOf(Resource.Success(roster)))
+        `when`(guildRepo.isSameGuild("random guild")).thenReturn(true)
 
-        val result = mock<Observer<Resource<List<Character>>>>()
-        viewModel.roster.observeForever(result)
-        viewModel.setGuildSearch("tichondrius", "chicken lords")
-        verify(repository).getGuildRoster("tichondrius", "chicken lords")
+        val observer = mock<Observer<Resource<List<Character>>>>()
+        val viewModel = GuildRosterViewModel(guildRepo, charRepo)
+        viewModel.roster.observeForever(observer)
+        viewModel.setGuildSearch("tichondrius", "random guild")
+
+        verify(guildRepo).isSameGuild("random guild")
+        verify(charRepo).getAllCharacters()
 
         assert(true)
-    }*/
+    }
+
+    @Test
+    fun newGuild() = runBlocking {
+        val apiResponse = mock<List<GuildCharacter>>()
+        `when`(guildRepo.getGuildRoster("tichondrius", "new guild"))
+                .thenReturn(flowOf(Resource.Success(apiResponse)))
+
+        `when`(guildRepo.isSameGuild("new guild")).thenReturn(false)
+
+        val observer = mock<Observer<Resource<List<Character>>>>()
+        val viewModel = GuildRosterViewModel(guildRepo, charRepo)
+        viewModel.roster.observeForever(observer)
+        viewModel.setGuildSearch("tichondrius", "new guild")
+
+        verify(guildRepo).isSameGuild("new guild")
+        verify(guildRepo).getGuildRoster("tichondrius", "new guild")
+
+        assert(true)
+    }
+
+    @Test
+    fun empty() = runBlocking {
+        val result = mock<Observer<Resource<List<Character>>>>()
+        val viewModel = GuildRosterViewModel(guildRepo, charRepo)
+        viewModel.roster.observeForever(result)
+        verifyNoMoreInteractions(guildRepo)
+    }
 }

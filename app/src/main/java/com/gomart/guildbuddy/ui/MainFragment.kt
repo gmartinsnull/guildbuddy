@@ -39,8 +39,6 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                             edtGuildName.text.toString().replace(" ", "-")
                     )
             )
-
-            viewModel.storeSearchData(edtRealm.text.toString(), edtGuildName.text.toString())
         }
     }
 }

@@ -13,11 +13,11 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.gomart.guildbuddy.R
 import com.gomart.guildbuddy.databinding.FragmentRosterBinding
+import com.gomart.guildbuddy.network.NetworkUtils
 import com.gomart.guildbuddy.viewmodel.GuildRosterViewModel
 import com.gomart.guildbuddy.vo.Resource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_roster.*
-import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 
 /**
@@ -30,6 +30,8 @@ class RosterFragment : Fragment() {
 
     @Inject
     lateinit var rosterRecyclerViewAdapter: RosterRecyclerViewAdapter
+    @Inject
+    lateinit var networkUtils: NetworkUtils
 
     private val params by navArgs<RosterFragmentArgs>()
 
@@ -69,6 +71,7 @@ class RosterFragment : Fragment() {
         })
         progress.visibility = View.VISIBLE
 
-        viewModel.setGuildSearch(params.realm, params.guildName)
+        if (networkUtils.checkConnection())
+            viewModel.setGuildSearch(params.realm, params.guildName)
     }
 }

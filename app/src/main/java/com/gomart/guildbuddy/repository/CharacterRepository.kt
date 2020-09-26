@@ -22,9 +22,7 @@ class CharacterRepository @Inject constructor(
         private val characterDao: CharacterDao,
         private val sharedPrefs: SharedPrefs
 ) {
-    fun getCharacter(realm: String,
-                     name: String
-    ) = flow {
+    fun getCharacter(realm: String, name: String) = flow {
         sharedPrefs.getSharedPrefsByKey("guild")?.let {
             emit(fetchCharacter(realm, name))
         } ?: Resource.Error(Throwable(), "guild not found")
@@ -45,7 +43,7 @@ class CharacterRepository @Inject constructor(
             } else {
                 Resource.Error(Throwable(errorBody().toString()))
             }
-        } catch (exception: Exception){
+        } catch (exception: Exception) {
             Resource.Error(Throwable(), "potential null token")
         }
     }
