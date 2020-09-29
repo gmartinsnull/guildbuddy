@@ -2,6 +2,7 @@ package com.gomart.guildbuddy.viewmodel
 
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
+import com.gomart.guildbuddy.CoroutinesContextProvider
 import com.gomart.guildbuddy.repository.CharacterRepository
 import com.gomart.guildbuddy.repository.GuildRepository
 import com.gomart.guildbuddy.testing.OpenForTesting
@@ -18,12 +19,13 @@ import kotlinx.coroutines.launch
 @OpenForTesting
 class GuildRosterViewModel @ViewModelInject constructor(
         private val guildRepo: GuildRepository,
-        private val characterRepo: CharacterRepository
+        private val characterRepo: CharacterRepository,
+        private val contextProvider: CoroutinesContextProvider
 ) : ViewModel() {
     private val guildRequest: MutableLiveData<Guild> = MutableLiveData()
 
     val roster = guildRequest.switchMap { guild ->
-        liveData(viewModelScope.coroutineContext + Dispatchers.IO) {
+        liveData(contextProvider.IO) {
             if (guildRepo.isSameGuild(guild.name)) {
                 when (guildRepo.getGuild()) {
                     is Resource.Error -> guildRepo.insertGuild(guild)

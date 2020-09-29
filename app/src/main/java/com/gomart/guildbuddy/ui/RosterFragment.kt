@@ -15,6 +15,7 @@ import com.gomart.guildbuddy.R
 import com.gomart.guildbuddy.databinding.FragmentRosterBinding
 import com.gomart.guildbuddy.network.NetworkUtils
 import com.gomart.guildbuddy.viewmodel.GuildRosterViewModel
+import com.gomart.guildbuddy.vo.Character
 import com.gomart.guildbuddy.vo.Resource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_roster.*
@@ -52,17 +53,7 @@ class RosterFragment : Fragment() {
                     progress.visibility = View.GONE
                     txtError.visibility = View.GONE
 
-                    binding.recycler.apply {
-                        setHasFixedSize(true)
-
-                        val gridLayoutManager = GridLayoutManager(context, 3)
-                        gridLayoutManager.orientation = LinearLayoutManager.VERTICAL
-
-                        layoutManager = gridLayoutManager
-
-                        adapter = rosterRecyclerViewAdapter
-                        rosterRecyclerViewAdapter.setData(response.data)
-                    }
+                    setupAdapter(response.data)
                 }
                 is Resource.Error -> {
                     progress.visibility = View.GONE
@@ -76,6 +67,23 @@ class RosterFragment : Fragment() {
         if (networkUtils.checkConnection())
             viewModel.setGuildSearch(params.realm, params.guildName)
 
+    }
+
+    /**
+     * set up recycler view adapter
+     */
+    private fun setupAdapter(data: List<Character>) {
+        binding.recycler.apply {
+            setHasFixedSize(true)
+
+            val gridLayoutManager = GridLayoutManager(context, 3)
+            gridLayoutManager.orientation = LinearLayoutManager.VERTICAL
+
+            layoutManager = gridLayoutManager
+
+            adapter = rosterRecyclerViewAdapter
+            rosterRecyclerViewAdapter.setData(data)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
