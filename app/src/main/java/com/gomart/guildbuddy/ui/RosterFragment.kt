@@ -48,6 +48,7 @@ class RosterFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.roster.observe(viewLifecycleOwner, Observer { response ->
+            refresh.isRefreshing = false
             when (response) {
                 is Resource.Success -> {
                     progress.visibility = View.GONE
@@ -62,6 +63,10 @@ class RosterFragment : Fragment() {
                 }
             }
         })
+        refresh.setOnRefreshListener {
+            viewModel.refreshRoster()
+        }
+
         progress.visibility = View.VISIBLE
 
         if (networkUtils.checkConnection())

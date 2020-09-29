@@ -23,10 +23,11 @@ class GuildRosterViewModel @ViewModelInject constructor(
         private val contextProvider: CoroutinesContextProvider
 ) : ViewModel() {
     private val guildRequest: MutableLiveData<Guild> = MutableLiveData()
+    private var isRefresh = false
 
     val roster = guildRequest.switchMap { guild ->
         liveData(contextProvider.IO) {
-            if (guildRepo.isSameGuild(guild.name)) {
+            if (!isRefresh && guildRepo.isSameGuild(guild.name)) {
                 when (guildRepo.getGuild()) {
                     is Resource.Error -> guildRepo.insertGuild(guild)
                 }
@@ -52,6 +53,7 @@ class GuildRosterViewModel @ViewModelInject constructor(
                         }
                     }
                 }
+                isRefresh = false
             }
         }
     }
@@ -67,4 +69,12 @@ class GuildRosterViewModel @ViewModelInject constructor(
      * deletes guild from database
      */
     fun changeGuild() = viewModelScope.launch(Dispatchers.IO) { guildRepo.deleteGuild() }
+
+    /**
+     * sets isRefresh to true and sets guild livedata to trigger fetch guild roster
+     */
+    fun refreshRoster(){
+        isRefresh = true
+        setGuildSearch(guildRequest.value?.realm ?: "", guildRequest.value?.name ?: "")
+    }
 }
