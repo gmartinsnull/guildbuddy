@@ -45,7 +45,9 @@ class GuildSearchViewModel @ViewModelInject constructor(
     fun getSearchData(): List<String> {
         sharedPrefs.getSharedPrefsByKey("realm")?.let { realm ->
             sharedPrefs.getSharedPrefsByKey("guild")?.let { guild ->
-                return listOf(realm, guild.replace("-", " "))
+                sharedPrefs.getSharedPrefsByKey("region")?.let { region ->
+                    return listOf(realm, guild.replace("-", " "), region)
+                }
             }
         }
         return listOf()

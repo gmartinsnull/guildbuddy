@@ -50,7 +50,7 @@ class GuildRosterViewModelTest {
 
         val observer = mock<Observer<Resource<List<Character>>>>()
         viewModel.roster.observeForever(observer)
-        viewModel.setGuildSearch("bar", "foo")
+        viewModel.setGuildSearch("bar", "foo", "us")
 
         verify(guildRepo).isSameGuild("foo")
         verify(guildRepo).getGuild()
@@ -60,17 +60,17 @@ class GuildRosterViewModelTest {
     @Test
     fun newGuild() = testCoroutineRule.runBlockingTest {
         val apiResponse = mock<List<GuildCharacter>>()
-        `when`(guildRepo.getGuildRoster("bar", "foo"))
+        `when`(guildRepo.getGuildRoster("bar", "foo", "us"))
                 .thenReturn(flowOf(Resource.Success(apiResponse)))
 
         `when`(guildRepo.isSameGuild("foo")).thenReturn(false)
 
         val observer = mock<Observer<Resource<List<Character>>>>()
         viewModel.roster.observeForever(observer)
-        viewModel.setGuildSearch("bar", "foo")
+        viewModel.setGuildSearch("bar", "foo", "us")
 
         verify(guildRepo).isSameGuild("foo")
-        verify(guildRepo).getGuildRoster("bar", "foo")
+        verify(guildRepo).getGuildRoster("bar", "foo", "us")
     }
 
     @Test

@@ -11,9 +11,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
  *   Description:
  */
 @OpenForTesting
-class NetworkUtils constructor(
-        @ApplicationContext private val context: Context
-) {
+class NetworkUtils constructor(@ApplicationContext private val context: Context) {
     /**
      * checks for internet connection
      */

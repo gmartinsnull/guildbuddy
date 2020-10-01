@@ -24,6 +24,7 @@ class GuildRosterViewModel @ViewModelInject constructor(
 ) : ViewModel() {
     private val guildRequest: MutableLiveData<Guild> = MutableLiveData()
     private var isRefresh = false
+    private var region = "us"
 
     val roster = guildRequest.switchMap { guild ->
         liveData(contextProvider.IO) {
@@ -33,7 +34,7 @@ class GuildRosterViewModel @ViewModelInject constructor(
                 }
                 emit(Resource.Success(characterRepo.getAllCharacters()))
             } else {
-                guildRepo.getGuildRoster(guild.realm, guild.name).collect { resource ->
+                guildRepo.getGuildRoster(guild.realm, guild.name, region).collect { resource ->
                     when (resource) {
                         is Resource.Success -> {
                             characterRepo.deleteAllCharacters()
@@ -61,7 +62,8 @@ class GuildRosterViewModel @ViewModelInject constructor(
     /**
      * set search fields for api request
      */
-    fun setGuildSearch(realmName: String, guildName: String) {
+    fun setGuildSearch(realmName: String, guildName: String, realmRegion: String) {
+        region = realmRegion
         guildRequest.value = Guild(guildName, realmName)
     }
 
@@ -73,8 +75,12 @@ class GuildRosterViewModel @ViewModelInject constructor(
     /**
      * sets isRefresh to true and sets guild livedata to trigger fetch guild roster
      */
-    fun refreshRoster(){
+    fun refreshRoster() {
         isRefresh = true
-        setGuildSearch(guildRequest.value?.realm ?: "", guildRequest.value?.name ?: "")
+        setGuildSearch(
+                guildRequest.value?.realm ?: "",
+                guildRequest.value?.name ?: "",
+                region
+        )
     }
 }

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.room.Room
 import com.gomart.guildbuddy.data.AppDatabase
+import com.gomart.guildbuddy.data.SharedPrefs
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,6 +23,10 @@ object DataModule {
     @Provides
     fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences =
             context.getSharedPreferences("sharedprefs", Context.MODE_PRIVATE)
+
+    @Singleton
+    @Provides
+    fun provideSharedPrefs(sharedPreferences: SharedPreferences): SharedPrefs = SharedPrefs(sharedPreferences)
 
     @DatabaseClient
     @Singleton

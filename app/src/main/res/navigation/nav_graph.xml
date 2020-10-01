@@ -26,5 +26,8 @@
         <argument
             android:name="guildName"
             app:argType="string" />
+        <argument
+            android:name="region"
+            app:argType="string" />
     </fragment>
 </navigation>

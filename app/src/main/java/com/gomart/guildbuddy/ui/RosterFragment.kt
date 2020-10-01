@@ -70,7 +70,7 @@ class RosterFragment : Fragment() {
         progress.visibility = View.VISIBLE
 
         if (networkUtils.checkConnection())
-            viewModel.setGuildSearch(params.realm, params.guildName)
+            viewModel.setGuildSearch(params.realm, params.guildName, params.region)
 
     }
 

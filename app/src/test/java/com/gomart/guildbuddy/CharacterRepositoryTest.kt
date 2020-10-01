@@ -1,10 +1,10 @@
 package com.gomart.guildbuddy
 
-import android.content.SharedPreferences
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.gomart.guildbuddy.data.AppDatabase
 import com.gomart.guildbuddy.data.CharacterDao
 import com.gomart.guildbuddy.data.SharedPrefs
+import com.gomart.guildbuddy.network.ApiInterceptor
 import com.gomart.guildbuddy.network.CharacterResponse
 import com.gomart.guildbuddy.network.services.CharacterService
 import com.gomart.guildbuddy.repository.CharacterRepository
@@ -29,10 +29,10 @@ import retrofit2.Response
 @RunWith(JUnit4::class)
 class CharacterRepositoryTest {
     private lateinit var repository: CharacterRepository
-    private lateinit var sharedPrefs: SharedPrefs
+    private val sharedPrefs = mock(SharedPrefs::class.java)
+    private val apiInterceptor = mock(ApiInterceptor::class.java)
     private val dao = mock(CharacterDao::class.java)
     private val service = mock(CharacterService::class.java)
-    private val sharedPreferences = mock(SharedPreferences::class.java)
 
     @Rule
     @JvmField
@@ -43,8 +43,9 @@ class CharacterRepositoryTest {
         val db = mock(AppDatabase::class.java)
         `when`(db.characterDao()).thenReturn(dao)
         `when`(db.runInTransaction(ArgumentMatchers.any())).thenCallRealMethod()
-        sharedPrefs = SharedPrefs(sharedPreferences)
-        repository = CharacterRepository(service, dao, sharedPrefs)
+        repository = CharacterRepository(service, dao)
+        repository.sharedPrefs = sharedPrefs
+        repository.apiInterceptor = apiInterceptor
     }
 
     @Test

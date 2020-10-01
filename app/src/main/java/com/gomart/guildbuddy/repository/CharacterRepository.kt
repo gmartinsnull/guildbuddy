@@ -1,8 +1,7 @@
 package com.gomart.guildbuddy.repository
 
-import com.gomart.guildbuddy.BuildConfig
 import com.gomart.guildbuddy.data.CharacterDao
-import com.gomart.guildbuddy.data.SharedPrefs
+import com.gomart.guildbuddy.network.BaseRepository
 import com.gomart.guildbuddy.network.CharacterResponse
 import com.gomart.guildbuddy.network.services.CharacterService
 import com.gomart.guildbuddy.testing.OpenForTesting
@@ -19,41 +18,40 @@ import javax.inject.Inject
 @OpenForTesting
 class CharacterRepository @Inject constructor(
         private var service: CharacterService,
-        private val characterDao: CharacterDao,
-        private val sharedPrefs: SharedPrefs
-) {
+        private val characterDao: CharacterDao
+): BaseRepository() {
     fun getCharacter(realm: String, name: String) = flow {
         sharedPrefs.getSharedPrefsByKey("guild")?.let {
             emit(fetchCharacter(realm, name))
         } ?: Resource.Error(Throwable(), "guild not found")
     }
 
-    private suspend fun fetchCharacter(realm: String, name: String) = service.getCharacter(
-            realm,
-            name.toLowerCase(Locale.ROOT),
-            BuildConfig.NAMESPACE,
-            BuildConfig.LOCALE,
-            "${sharedPrefs.getSharedPrefsByKey("token")}"
-    ).run {
-        try {
-            val response = body()
-            if (isSuccessful && response != null) {
-                characterDao.insertCharacter(convertToCharacter(response, realm))
-                Resource.Success(characterDao.getAll())
-            } else {
-                Resource.Error(Throwable(errorBody().toString()))
+    private suspend fun fetchCharacter(realm: String, name: String): Resource<List<Character>> {
+        apiInterceptor.setRegion(sharedPrefs.getSharedPrefsByKey("region") ?: "us")
+        return service.getCharacter(
+                realm,
+                name.toLowerCase(Locale.ROOT),
+                namespace,
+                locale,
+                token
+        ).run {
+            try {
+                val response = body()
+                if (isSuccessful && response != null) {
+                    characterDao.insertCharacter(convertToCharacter(response, realm))
+                    Resource.Success(characterDao.getAll())
+                } else {
+                    Resource.Error(Throwable(errorBody().toString()))
+                }
+            } catch (exception: Exception) {
+                Resource.Error(Throwable(), "potential null token")
             }
-        } catch (exception: Exception) {
-            Resource.Error(Throwable(), "potential null token")
         }
     }
 
     private suspend fun getAvatar(
             realm: String,
-            name: String,
-            namespace: String,
-            locale: String,
-            token: String
+            name: String
     ) = service.getAvatar(realm, name, namespace, locale, token)
 
     suspend fun getAllCharacters() = characterDao.getAll()
@@ -70,10 +68,7 @@ class CharacterRepository @Inject constructor(
                 characterResponse.level,
                 getAvatar(
                         realmName,
-                        characterResponse.name.toLowerCase(Locale.ROOT),
-                        BuildConfig.NAMESPACE,
-                        BuildConfig.LOCALE,
-                        "${sharedPrefs.getSharedPrefsByKey("token")}"
+                        characterResponse.name.toLowerCase(Locale.getDefault())
                 ).avatar,
                 characterResponse.achievementPoints,
                 characterResponse.itemLevel,

@@ -22,10 +22,13 @@ android {
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
 
         buildConfigField 'String', 'URL', '"https://us.api.blizzard.com/"'
+        buildConfigField 'String', 'URL_EU', '"eu.api.blizzard.com"'
         buildConfigField 'String', 'URL_TOKEN', '"https://us.battle.net/"'
         buildConfigField 'String', 'CHAR_URL', '"https://render-us.worldofwarcraft.com/character/"'
         buildConfigField 'String', 'LOCALE', '"en_US"'
+        buildConfigField 'String', 'LOCALE_EU', '"en_GB"'
         buildConfigField 'String', 'NAMESPACE', '"profile-us"'
+        buildConfigField 'String', 'NAMESPACE_EU', '"profile-eu"'
         buildConfigField 'String', 'CLIENT_ID', '"10a706d5b5b445bda040772571515014"'
         buildConfigField 'String', 'CLIENT_SECRET', '"de2RV6e5LOjkSycnV995MzYJJPCb5pOt"'
         buildConfigField 'String', 'GRANT_TYPE', '"client_credentials"'

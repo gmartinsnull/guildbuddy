@@ -2,6 +2,7 @@ package com.gomart.guildbuddy.di
 
 import android.content.Context
 import com.gomart.guildbuddy.BuildConfig
+import com.gomart.guildbuddy.network.ApiInterceptor
 import com.gomart.guildbuddy.network.NetworkUtils
 import dagger.Module
 import dagger.Provides
@@ -9,10 +10,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 
@@ -26,26 +25,20 @@ object NetworkModule {
     @RetrofitClient
     @Singleton
     @Provides
-    fun provideRetrofit(): Retrofit {
-        val interceptor = HttpLoggingInterceptor()
-        interceptor.level = HttpLoggingInterceptor.Level.BODY
+    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit = Retrofit.Builder()
+            .baseUrl(BuildConfig.URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient)
+            .build()
 
-        val okHttpClient =
-                if (BuildConfig.DEBUG){
-                    OkHttpClient.Builder()
-                            .addInterceptor(interceptor)
-                            .build()
-                }else{
-                    OkHttpClient.Builder()
-                            .build()
-                }
+    @Singleton
+    @Provides
+    fun provideOkHttpClient(apiInterceptor: ApiInterceptor): OkHttpClient =
+            OkHttpClient.Builder().addInterceptor(apiInterceptor).build()
 
-        return Retrofit.Builder()
-                .baseUrl(BuildConfig.URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(okHttpClient)
-                .build()
-    }
+    @Singleton
+    @Provides
+    fun provideApiInterceptor() = ApiInterceptor()
 
     @Singleton
     @Provides
