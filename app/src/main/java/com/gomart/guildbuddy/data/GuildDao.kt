@@ -2,7 +2,7 @@ package com.gomart.guildbuddy.data
 
 import androidx.room.*
 import com.gomart.guildbuddy.vo.Guild
-import com.gomart.guildbuddy.vo.GuildCharacter
+import com.gomart.guildbuddy.vo.Character
 
 /**
  *   Created by gmartins on 2020-08-31
@@ -20,12 +20,12 @@ interface GuildDao {
     suspend fun deleteGuild()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertRoster(guildCharacters: List<GuildCharacter>)
+    suspend fun insertRoster(guildCharacters: List<Character>)
 
     @Transaction
-    @Query("SELECT * FROM GuildCharacter")
-    fun getRoster(): List<GuildCharacter>
+    @Query("SELECT * FROM Character")
+    fun getRoster(): List<Character>
 
-    @Query("DELETE FROM GuildCharacter")
+    @Query("DELETE FROM Character")
     suspend fun deleteAll()
 }

@@ -6,6 +6,7 @@ import com.gomart.guildbuddy.CoroutinesContextProvider
 import com.gomart.guildbuddy.repository.CharacterRepository
 import com.gomart.guildbuddy.repository.GuildRepository
 import com.gomart.guildbuddy.testing.OpenForTesting
+import com.gomart.guildbuddy.vo.Character
 import com.gomart.guildbuddy.vo.Guild
 import com.gomart.guildbuddy.vo.Resource
 import kotlinx.coroutines.Dispatchers

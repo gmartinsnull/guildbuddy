@@ -7,7 +7,7 @@ import com.gomart.guildbuddy.network.services.GuildService
 import com.gomart.guildbuddy.network.services.OAuthService
 import com.gomart.guildbuddy.testing.OpenForTesting
 import com.gomart.guildbuddy.vo.Guild
-import com.gomart.guildbuddy.vo.GuildCharacter
+import com.gomart.guildbuddy.vo.Character
 import com.gomart.guildbuddy.vo.Resource
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -37,7 +37,7 @@ class GuildRepository @Inject constructor(
     private suspend fun fetchGuildRoster(
             realm: String,
             guildName: String
-    ): Resource<List<GuildCharacter>> {
+    ): Resource<List<Character>> {
         apiInterceptor.setRegion(sharedPrefs.getSharedPrefsByKey("region") ?: "us")
         return guildService.fetchGuildMembers(realm, guildName, namespace, locale, token)
                 .run {

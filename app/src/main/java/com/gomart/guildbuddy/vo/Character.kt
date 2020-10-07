@@ -14,14 +14,14 @@ data class Character(
         @PrimaryKey
         var id: Int,
         var name: String,
-        var race: String,
-        var level: Int,
-        var thumbnail: String,
-        var achievementPoints: Int,
-        var itemLevel: Int,
+        var race: String? = "",
+        var level: Int? = 0,
+        var thumbnail: String? = "",
+        var achievementPoints: Int? = 0,
+        var itemLevel: Int? = 0,
         var totalHonorableKills: Int = 0,
-        var charClass: String,
-        var spec: String
+        var charClass: String? = "",
+        var spec: String? = ""
 ) {
     companion object {
         /**

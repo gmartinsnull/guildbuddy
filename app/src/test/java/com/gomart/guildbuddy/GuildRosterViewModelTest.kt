@@ -59,7 +59,7 @@ class GuildRosterViewModelTest {
 
     @Test
     fun newGuild() = testCoroutineRule.runBlockingTest {
-        val apiResponse = mock<List<GuildCharacter>>()
+        val apiResponse = mock<List<Character>>()
         `when`(guildRepo.getGuildRoster("bar", "foo", "us"))
                 .thenReturn(flowOf(Resource.Success(apiResponse)))
 
