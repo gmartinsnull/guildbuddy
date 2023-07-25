@@ -2,7 +2,7 @@ package com.gomart.guildbuddy.di
 
 import android.content.Context
 import androidx.recyclerview.widget.RecyclerView
-import com.gomart.guildbuddy.ui.RosterRecyclerViewAdapter
+import com.gomart.guildbuddy.ui.roster.RosterRecyclerViewAdapter
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

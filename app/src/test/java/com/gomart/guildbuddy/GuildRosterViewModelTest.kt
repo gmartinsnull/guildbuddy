@@ -7,7 +7,7 @@ import com.gomart.guildbuddy.repository.CharacterRepository
 import com.gomart.guildbuddy.repository.GuildRepository
 import com.gomart.guildbuddy.util.TestCoroutineRule
 import com.gomart.guildbuddy.util.TestCoroutinesContextProvider
-import com.gomart.guildbuddy.viewmodel.GuildRosterViewModel
+import com.gomart.guildbuddy.ui.roster.GuildRosterViewModel
 import com.gomart.guildbuddy.vo.*
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Before

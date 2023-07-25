@@ -29,10 +29,12 @@ data class Character(
          */
         @JvmStatic
         @BindingAdapter("avatar")
-        fun loadImage(imageView: ImageView, imageURL: String) {
-            Glide.with(imageView.context)
-                    .load(imageURL)
+        fun loadImage(imageView: ImageView, imageURL: String?) {
+            imageURL?.let {
+                Glide.with(imageView.context)
+                    .load(it)
                     .into(imageView)
+            }
         }
     }
 }

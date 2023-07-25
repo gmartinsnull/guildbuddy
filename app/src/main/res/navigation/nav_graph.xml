@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/mainFragment"
-        android:name="com.gomart.guildbuddy.ui.MainFragment"
+        android:name="com.gomart.guildbuddy.ui.main.MainFragment"
         android:label="Guild Search"
         tools:layout="@layout/fragment_main">
         <action
@@ -17,7 +17,7 @@
 
     <fragment
         android:id="@+id/rosterFragment"
-        android:name="com.gomart.guildbuddy.ui.RosterFragment"
+        android:name="com.gomart.guildbuddy.ui.roster.RosterFragment"
         android:label="Roster"
         tools:layout="@layout/fragment_roster">
         <argument

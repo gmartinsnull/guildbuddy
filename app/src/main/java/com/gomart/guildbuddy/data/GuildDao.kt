@@ -11,21 +11,21 @@ import com.gomart.guildbuddy.vo.Character
 @Dao
 interface GuildDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertGuild(guild: Guild)
+    fun insertGuild(guild: Guild)
 
     @Query("SELECT * FROM Guild")
-    suspend fun getGuild(): Guild?
+    fun getGuild(): Guild?
 
     @Query("DELETE FROM Guild")
-    suspend fun deleteGuild()
+    fun deleteGuild()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertRoster(guildCharacters: List<Character>)
+    fun insertRoster(guildCharacters: List<Character>)
 
     @Transaction
     @Query("SELECT * FROM Character")
     fun getRoster(): List<Character>
 
     @Query("DELETE FROM Character")
-    suspend fun deleteAll()
+    fun deleteAll()
 }

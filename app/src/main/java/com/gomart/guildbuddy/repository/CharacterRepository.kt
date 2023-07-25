@@ -6,6 +6,7 @@ import com.gomart.guildbuddy.network.CharacterResponse
 import com.gomart.guildbuddy.network.services.CharacterService
 import com.gomart.guildbuddy.testing.OpenForTesting
 import com.gomart.guildbuddy.vo.Character
+import com.gomart.guildbuddy.vo.MediaResponse
 import com.gomart.guildbuddy.vo.Resource
 import kotlinx.coroutines.flow.*
 import java.util.*
@@ -52,7 +53,10 @@ class CharacterRepository @Inject constructor(
     private suspend fun getAvatar(
             realm: String,
             name: String
-    ) = service.getAvatar(realm, name, namespace, locale, token)
+    ): String {
+        val result = service.getAvatar(realm, name, namespace, locale, token)
+        return result.assets.find { it.key == "avatar" }?.value ?: ""
+    }
 
     suspend fun getAllCharacters() = characterDao.getAll()
     suspend fun deleteAllCharacters() = characterDao.deleteAll()
@@ -69,7 +73,7 @@ class CharacterRepository @Inject constructor(
                 getAvatar(
                         realmName,
                         characterResponse.name.toLowerCase(Locale.getDefault())
-                ).avatar,
+                ),
                 characterResponse.achievementPoints,
                 characterResponse.itemLevel,
                 0,

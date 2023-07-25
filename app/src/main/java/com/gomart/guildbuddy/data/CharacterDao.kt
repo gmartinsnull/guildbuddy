@@ -12,17 +12,17 @@ import com.gomart.guildbuddy.vo.Character
 @OpenForTesting
 interface CharacterDao {
         @Query("SELECT * FROM character")
-        suspend fun getAll(): List<Character>
+        fun getAll(): List<Character>
 
         @Insert(onConflict = OnConflictStrategy.REPLACE)
-        suspend fun insert(characters: List<Character>)
+        fun insert(characters: List<Character>)
 
         @Insert(onConflict = OnConflictStrategy.REPLACE)
-        suspend fun insertCharacter(character: Character)
+        fun insertCharacter(character: Character)
 
         @Update
-        suspend fun update(characters: List<Character>)
+        fun update(characters: List<Character>)
 
         @Query("DELETE FROM character")
-        suspend fun deleteAll()
+        fun deleteAll()
 }

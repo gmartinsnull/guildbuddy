@@ -1,27 +1,31 @@
-package com.gomart.guildbuddy.viewmodel
+package com.gomart.guildbuddy.ui.roster
 
-import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.*
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.switchMap
+import androidx.lifecycle.liveData
+import androidx.lifecycle.viewModelScope
 import com.gomart.guildbuddy.CoroutinesContextProvider
 import com.gomart.guildbuddy.repository.CharacterRepository
 import com.gomart.guildbuddy.repository.GuildRepository
 import com.gomart.guildbuddy.testing.OpenForTesting
-import com.gomart.guildbuddy.vo.Character
 import com.gomart.guildbuddy.vo.Guild
 import com.gomart.guildbuddy.vo.Resource
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  *   Created by gmartins on 2020-08-28
  *   Description:
  */
 @OpenForTesting
-class GuildRosterViewModel @ViewModelInject constructor(
-        private val guildRepo: GuildRepository,
-        private val characterRepo: CharacterRepository,
-        private val contextProvider: CoroutinesContextProvider
+@HiltViewModel
+class GuildRosterViewModel @Inject constructor(
+    private val guildRepo: GuildRepository,
+    private val characterRepo: CharacterRepository,
+    private val contextProvider: CoroutinesContextProvider
 ) : ViewModel() {
     private val guildRequest: MutableLiveData<Guild> = MutableLiveData()
     private var isRefresh = false
@@ -32,24 +36,40 @@ class GuildRosterViewModel @ViewModelInject constructor(
             if (!isRefresh && guildRepo.isSameGuild(guild.name)) {
                 when (guildRepo.getGuild()) {
                     is Resource.Error -> guildRepo.insertGuild(guild)
+                    else -> {
+                        // do nothing
+                    }
                 }
                 emit(Resource.Success(characterRepo.getAllCharacters()))
             } else {
                 guildRepo.getGuildRoster(guild.realm, guild.name, region).collect { resource ->
                     when (resource) {
+                        is Resource.Loading -> {
+                            // already handled
+                        }
                         is Resource.Success -> {
                             characterRepo.deleteAllCharacters()
                             resource.data.forEach { guildCharacter ->
-                                characterRepo.getCharacter(guild.realm, guildCharacter.name).collect {
-                                    when (it) {
-                                        is Resource.Error -> {
-                                            emit(Resource.Error(Throwable(), "Character not found: ${guildCharacter.name}"))
+                                characterRepo.getCharacter(guild.realm, guildCharacter.name)
+                                    .collect {
+                                        when (it) {
+                                            is Resource.Error -> {
+                                                emit(
+                                                    Resource.Error(
+                                                        Throwable(),
+                                                        "Character not found: ${guildCharacter.name}"
+                                                    )
+                                                )
+                                            }
+                                            else -> {
+                                                // do nothing
+                                            }
                                         }
                                     }
-                                }
                             }
                             emit(Resource.Success(characterRepo.getAllCharacters()))
                         }
+
                         is Resource.Error -> {
                             emit(Resource.Error(Throwable(), resource.message))
                         }
@@ -79,9 +99,9 @@ class GuildRosterViewModel @ViewModelInject constructor(
     fun refreshRoster() {
         isRefresh = true
         setGuildSearch(
-                guildRequest.value?.realm ?: "",
-                guildRequest.value?.name ?: "",
-                region
+            guildRequest.value?.realm ?: "",
+            guildRequest.value?.name ?: "",
+            region
         )
     }
 }

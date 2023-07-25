@@ -1,4 +1,4 @@
-package com.gomart.guildbuddy.ui
+package com.gomart.guildbuddy.ui.main
 
 import androidx.appcompat.app.AppCompatActivity
 import com.gomart.guildbuddy.R

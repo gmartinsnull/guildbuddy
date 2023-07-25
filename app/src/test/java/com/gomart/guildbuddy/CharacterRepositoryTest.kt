@@ -94,7 +94,7 @@ class CharacterRepositoryTest {
                 BuildConfig.NAMESPACE,
                 BuildConfig.LOCALE,
                 token
-        )).thenReturn(MediaResponse("unknown avatar"))
+        )).thenReturn(MediaResponse(listOf(CharacterAssetsResponse(key = "avatar", value = "unknown avatar"))))
 
         val response = repository.getCharacter(
                 "tichondrius",

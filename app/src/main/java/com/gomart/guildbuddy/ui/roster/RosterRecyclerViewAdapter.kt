@@ -1,4 +1,4 @@
-package com.gomart.guildbuddy.ui
+package com.gomart.guildbuddy.ui.roster
 
 import android.content.Context
 import android.view.LayoutInflater

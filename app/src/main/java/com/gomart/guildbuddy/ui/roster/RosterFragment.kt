@@ -1,4 +1,4 @@
-package com.gomart.guildbuddy.ui
+package com.gomart.guildbuddy.ui.roster
 
 import android.os.Bundle
 import android.view.*
@@ -14,11 +14,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.gomart.guildbuddy.R
 import com.gomart.guildbuddy.databinding.FragmentRosterBinding
 import com.gomart.guildbuddy.network.NetworkUtils
-import com.gomart.guildbuddy.viewmodel.GuildRosterViewModel
 import com.gomart.guildbuddy.vo.Character
 import com.gomart.guildbuddy.vo.Resource
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_roster.*
 import javax.inject.Inject
 
 /**
@@ -39,7 +37,7 @@ class RosterFragment : Fragment() {
 
     private lateinit var binding: FragmentRosterBinding
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         setHasOptionsMenu(true)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_roster, container, false)
         return binding.root
@@ -48,26 +46,29 @@ class RosterFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.roster.observe(viewLifecycleOwner, Observer { response ->
-            refresh.isRefreshing = false
+            binding.refresh.isRefreshing = false
             when (response) {
                 is Resource.Success -> {
-                    progress.visibility = View.GONE
-                    txtError.visibility = View.GONE
+                    binding.progress.visibility = View.GONE
+                    binding.txtError.visibility = View.GONE
 
                     setupAdapter(response.data)
                 }
                 is Resource.Error -> {
-                    progress.visibility = View.GONE
-                    txtError.visibility = View.VISIBLE
-                    txtError.text = response.message
+                    binding.progress.visibility = View.GONE
+                    binding.txtError.visibility = View.VISIBLE
+                    binding.txtError.text = response.message
+                }
+                else -> {
+                    // loading already handled
                 }
             }
         })
-        refresh.setOnRefreshListener {
+        binding.refresh.setOnRefreshListener {
             viewModel.refreshRoster()
         }
 
-        progress.visibility = View.VISIBLE
+        binding.progress.visibility = View.VISIBLE
 
         if (networkUtils.checkConnection())
             viewModel.setGuildSearch(params.realm, params.guildName, params.region)

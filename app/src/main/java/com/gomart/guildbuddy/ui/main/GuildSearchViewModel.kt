@@ -1,7 +1,5 @@
-package com.gomart.guildbuddy.viewmodel
+package com.gomart.guildbuddy.ui.main
 
-import androidx.hilt.Assisted
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
@@ -9,18 +7,20 @@ import androidx.lifecycle.viewModelScope
 import com.gomart.guildbuddy.data.SharedPrefs
 import com.gomart.guildbuddy.repository.GuildRepository
 import com.gomart.guildbuddy.vo.Token
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  *   Created by gmartins on 2020-08-29
  *   Description:
  */
-class GuildSearchViewModel @ViewModelInject constructor(
-        private val repository: GuildRepository,
-        private val sharedPrefs: SharedPrefs,
-        @Assisted
-        private val savedStateHandle: SavedStateHandle //needed by Hilt
+@HiltViewModel
+class GuildSearchViewModel @Inject constructor(
+    private val savedStateHandle: SavedStateHandle, //needed by Hilt
+    private val repository: GuildRepository,
+    private val sharedPrefs: SharedPrefs
 ) : ViewModel() {
     /**
      * fetches token from blizzard api
