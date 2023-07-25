@@ -2,8 +2,6 @@ package com.gomart.guildbuddy.ui.roster
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.switchMap
-import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.gomart.guildbuddy.CoroutinesContextProvider
 import com.gomart.guildbuddy.repository.CharacterRepository
@@ -13,6 +11,8 @@ import com.gomart.guildbuddy.vo.Guild
 import com.gomart.guildbuddy.vo.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,12 +27,15 @@ class GuildRosterViewModel @Inject constructor(
     private val characterRepo: CharacterRepository,
     private val contextProvider: CoroutinesContextProvider
 ) : ViewModel() {
-    private val guildRequest: MutableLiveData<Guild> = MutableLiveData()
     private var isRefresh = false
     private var region = "us"
 
-    val roster = guildRequest.switchMap { guild ->
-        liveData(contextProvider.IO) {
+    val rosterState: MutableLiveData<RosterState> = MutableLiveData()
+    var currentGuildSearch: Guild? = null
+
+    private fun handleGuildRoster(guild: Guild) {
+        viewModelScope.launch(contextProvider.IO) {
+            rosterState.postValue(RosterState.Loading)
             if (!isRefresh && guildRepo.isSameGuild(guild.name)) {
                 when (guildRepo.getGuild()) {
                     is Resource.Error -> guildRepo.insertGuild(guild)
@@ -40,42 +43,61 @@ class GuildRosterViewModel @Inject constructor(
                         // do nothing
                     }
                 }
-                emit(Resource.Success(characterRepo.getAllCharacters()))
+                rosterState.postValue(RosterState.Loaded(characterRepo.getAllCharacters()))
             } else {
-                guildRepo.getGuildRoster(guild.realm, guild.name, region).collect { resource ->
-                    when (resource) {
-                        is Resource.Loading -> {
-                            // already handled
-                        }
-                        is Resource.Success -> {
+                guildRepo.getGuildRoster(
+                    guild.realm,
+                    guild.name,
+                    region
+                ).flatMapConcat { resource ->
+                    flowOf(
+                        if (resource is Resource.Success)
+                            Resource.Success(resource.data)
+                        else
+                            Resource.Error(Throwable(), "guild roster error")
+                    )
+                }.flatMapConcat { guildRosterResource ->
+                    flowOf(
+                        if (guildRosterResource is Resource.Success) {
                             characterRepo.deleteAllCharacters()
-                            resource.data.forEach { guildCharacter ->
-                                characterRepo.getCharacter(guild.realm, guildCharacter.name)
-                                    .collect {
-                                        when (it) {
-                                            is Resource.Error -> {
-                                                emit(
-                                                    Resource.Error(
-                                                        Throwable(),
-                                                        "Character not found: ${guildCharacter.name}"
-                                                    )
-                                                )
-                                            }
-                                            else -> {
-                                                // do nothing
-                                            }
+                            guildRosterResource.data.forEach { guildCharacter ->
+                                characterRepo.getCharacter(
+                                    guild.realm,
+                                    guildCharacter.name
+                                ).collect {
+                                    when (it) {
+                                        is Resource.Error -> {
+                                            Resource.Error(
+                                                Throwable(),
+                                                "Character not found: ${guildCharacter.name}"
+                                            )
+                                        }
+
+                                        else -> {
+                                            // do nothing
                                         }
                                     }
+                                }
                             }
-                            emit(Resource.Success(characterRepo.getAllCharacters()))
+                            Resource.Success(characterRepo.getAllCharacters())
+                        } else {
+                            guildRosterResource
                         }
+                    )
+                }.collect { result ->
+                    rosterState.postValue(
+                        when (result) {
+                            is Resource.Success -> {
+                                RosterState.Loaded(result.data)
+                            }
 
-                        is Resource.Error -> {
-                            emit(Resource.Error(Throwable(), resource.message))
+                            is Resource.Error -> {
+                                RosterState.Error(result.message)
+                            }
                         }
-                    }
+                    )
+                    isRefresh = false
                 }
-                isRefresh = false
             }
         }
     }
@@ -85,7 +107,9 @@ class GuildRosterViewModel @Inject constructor(
      */
     fun setGuildSearch(realmName: String, guildName: String, realmRegion: String) {
         region = realmRegion
-        guildRequest.value = Guild(guildName, realmName)
+        val guild = Guild(guildName, realmName)
+        handleGuildRoster(guild)
+        currentGuildSearch = guild
     }
 
     /**
@@ -99,8 +123,8 @@ class GuildRosterViewModel @Inject constructor(
     fun refreshRoster() {
         isRefresh = true
         setGuildSearch(
-            guildRequest.value?.realm ?: "",
-            guildRequest.value?.name ?: "",
+            currentGuildSearch?.realm ?: "",
+            currentGuildSearch?.name ?: "",
             region
         )
     }

@@ -13,6 +13,4 @@ sealed class Resource<out T: Any> {
             private val exception: Throwable,
             val message: String = exception.message ?: "An unknown error occurred"
     ) : Resource<Nothing>()
-
-    class Loading(val isLoading: Boolean) : Resource<Nothing>()
 }

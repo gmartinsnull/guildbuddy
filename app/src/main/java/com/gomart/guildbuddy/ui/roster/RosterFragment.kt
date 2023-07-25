@@ -45,25 +45,27 @@ class RosterFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.roster.observe(viewLifecycleOwner, Observer { response ->
+        viewModel.rosterState.observe(viewLifecycleOwner) { response ->
             binding.refresh.isRefreshing = false
             when (response) {
-                is Resource.Success -> {
+                is RosterState.Loaded -> {
                     binding.progress.visibility = View.GONE
                     binding.txtError.visibility = View.GONE
 
                     setupAdapter(response.data)
                 }
-                is Resource.Error -> {
+
+                is RosterState.Error -> {
                     binding.progress.visibility = View.GONE
                     binding.txtError.visibility = View.VISIBLE
-                    binding.txtError.text = response.message
+                    binding.txtError.text = response.errorMessage
                 }
+
                 else -> {
                     // loading already handled
                 }
             }
-        })
+        }
         binding.refresh.setOnRefreshListener {
             viewModel.refreshRoster()
         }
