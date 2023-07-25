@@ -83,18 +83,18 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:2.1.4"
 
     //RETROFIT
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-    implementation 'com.google.code.gson:gson:2.9.0'
+    implementation "com.squareup.retrofit2:retrofit:${rootProject.ext.retrofit}"
+    implementation "com.squareup.retrofit2:converter-gson:${rootProject.ext.retrofit}"
+    implementation "com.google.code.gson:gson:${rootProject.ext.retrofit}"
 
     //OKHTTP
-    implementation 'com.squareup.okhttp3:okhttp:4.3.1'
-    implementation 'com.squareup.okhttp3:logging-interceptor:4.3.1'
+    implementation "com.squareup.okhttp3:okhttp:${rootProject.ext.okhttp}"
+    implementation "com.squareup.okhttp3:logging-interceptor:${rootProject.ext.okhttp}"
 
     // VIEWMODEL
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:${rootProject.ext.lifecycle}"
     // LIVEDATA
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.6.1"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:${rootProject.ext.lifecycle}"
 
     //CARDVIEW
     implementation "androidx.cardview:cardview:1.0.0"
@@ -111,13 +111,13 @@ dependencies {
     testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
 
     //ROOM
-    implementation "androidx.room:room-runtime:2.5.2"
-    annotationProcessor "androidx.room:room-compiler:2.5.2"
-    kapt "androidx.room:room-compiler:2.5.2"
+    implementation "androidx.room:room-runtime:${rootProject.ext.room}"
+    annotationProcessor "androidx.room:room-compiler:${rootProject.ext.room}"
+    kapt "androidx.room:room-compiler:${rootProject.ext.room}"
 
     //HILT
-    implementation 'com.google.dagger:hilt-android:2.47'
-    kapt 'com.google.dagger:hilt-android-compiler:2.47'
+    implementation "com.google.dagger:hilt-android:${rootProject.ext.hilt}"
+    kapt "com.google.dagger:hilt-android-compiler:${rootProject.ext.hilt}"
 
     //PICASSO
     implementation 'com.squareup.picasso:picasso:2.71828'
