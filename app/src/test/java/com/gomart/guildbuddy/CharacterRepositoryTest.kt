@@ -1,7 +1,6 @@
 package com.gomart.guildbuddy
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.gomart.guildbuddy.data.AppDatabase
 import com.gomart.guildbuddy.data.CharacterDao
 import com.gomart.guildbuddy.data.SharedPrefs
 import com.gomart.guildbuddy.network.ApiInterceptor
@@ -18,7 +17,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.*
 import retrofit2.Response
 
@@ -40,9 +38,6 @@ class CharacterRepositoryTest {
 
     @Before
     fun init() {
-        val db = mock(AppDatabase::class.java)
-        `when`(db.characterDao()).thenReturn(dao)
-        `when`(db.runInTransaction(ArgumentMatchers.any())).thenCallRealMethod()
         repository = CharacterRepository(service, dao)
         repository.sharedPrefs = sharedPrefs
         repository.apiInterceptor = apiInterceptor

@@ -8,10 +8,7 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okio.buffer
 import okio.source
-import org.hamcrest.CoreMatchers.`is`
-import org.hamcrest.core.IsNull
 import org.junit.After
-import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -39,15 +36,15 @@ class CharacterServiceTest {
     fun createService() {
         mockWebServer = MockWebServer()
         service = Retrofit.Builder()
-                .baseUrl(mockWebServer.url(BuildConfig.URL))
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-                .create(CharacterService::class.java)
+            .baseUrl(mockWebServer.url(BuildConfig.URL))
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(CharacterService::class.java)
         oathService = Retrofit.Builder()
-                .baseUrl(mockWebServer.url(BuildConfig.URL_TOKEN))
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-                .create(OAuthService::class.java)
+            .baseUrl(mockWebServer.url(BuildConfig.URL_TOKEN))
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(OAuthService::class.java)
     }
 
     @After
@@ -59,20 +56,19 @@ class CharacterServiceTest {
     fun search() = runBlocking {
         enqueueResponse("characters.json", emptyMap())
         val response = service.getCharacter(
-                "tichondrius",
-                "bukky",
-                BuildConfig.NAMESPACE,
-                BuildConfig.LOCALE,
-                oathService.fetchToken(
-                        BuildConfig.CLIENT_ID,
-                        BuildConfig.CLIENT_SECRET,
-                        BuildConfig.GRANT_TYPE
-                ).accessToken
+            "tichondrius",
+            "refakthug",
+            BuildConfig.NAMESPACE,
+            BuildConfig.LOCALE,
+            oathService.fetchToken(
+                BuildConfig.CLIENT_ID,
+                BuildConfig.CLIENT_SECRET,
+                BuildConfig.GRANT_TYPE
+            ).accessToken
         )
 
-        assertThat(response, IsNull.notNullValue())
-        assertThat(response.body()?.charClass?.name, `is`("Rogue"))
-        assertThat(response.body()?.name, `is`("Bukky"))
+        assert(response.body()?.charClass?.name == "Rogue")
+        assert(response.body()?.name == "Refakthug")
     }
 
     private fun enqueueResponse(fileName: String, headers: Map<String, String> = emptyMap()) {
@@ -83,12 +79,9 @@ class CharacterServiceTest {
             mockResponse.addHeader(key, value)
         }
         source?.readString(Charsets.UTF_8)?.let {
-            mockResponse
-                    .setBody(it)
+            mockResponse.setBody(it)
         }?.let {
-            mockWebServer.enqueue(
-                    it
-        )
+            mockWebServer.enqueue(it)
         }
     }
 }
